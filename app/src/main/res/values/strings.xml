@@ -2,5 +2,9 @@
     <string name="app_name">TSU.InSkips</string>
     <string name="hello">Добро пожаловать!</string>
     <string name="login">Войти</string>
-    <string name="register">Зарегистрироваться</string>
+    <string name="register">Регистрация</string>
+    <string name="enter">Вход</string>
+    <string name="email">Адрес электронной почты</string>
+    <string name="password">Пароль</string>
+    <string name="enregister">Зарегестрироваться</string>
 </resources>

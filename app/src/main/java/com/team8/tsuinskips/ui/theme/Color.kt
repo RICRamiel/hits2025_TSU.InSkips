@@ -2,6 +2,10 @@ package com.team8.tsuinskips.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val greenIll = Color(0xFF55D468)
+val orangeFamily = Color(0xFFFCA130)
+val blueTrip = Color(0xFF58DEDE)
+
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
