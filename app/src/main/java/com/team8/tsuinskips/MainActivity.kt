@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -69,6 +70,31 @@ fun ParametrButton(
             .offset(oX, oY)
             .fillMaxWidth(fraction)
             .height(61.dp)
+    ) {
+        Text(
+            text = text,
+            fontFamily = FontFamily(Font(R.font.istokweb_regular)),
+            color = Color.White,
+            fontSize = 20.sp,
+            modifier = Modifier.align(Alignment.CenterVertically),
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+fun SmallButton(
+    func: () -> Unit,
+    paddingValuesButton: PaddingValues = PaddingValues(0.dp),
+    text: String,
+) {
+    Button(
+        onClick = func, shape = RoundedCornerShape(16.dp), colors = ButtonColors(
+            colorResource(R.color.grey), Color.White, Color.Unspecified, Color.Unspecified
+        ), modifier = Modifier
+            .padding(paddingValuesButton)
+            .height(61.dp)
+            .widthIn(165.dp, 200.dp)
     ) {
         Text(
             text = text,
