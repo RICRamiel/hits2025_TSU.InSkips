@@ -47,6 +47,8 @@ fun AppNav() {
     ) {
         composable("home") { StartScreen(navController) }
         composable("login") { LoginScreen(navController) }
+        composable("register"){ SignUpScreen(navController)}
+        composable("request"){ RequestsScreen(navController)}
     }
 }
 

@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -35,7 +39,13 @@ import androidx.navigation.NavHostController
 fun LoginScreen(navController: NavHostController) {
     val email = remember { mutableStateOf("") }
     val passwd = remember { mutableStateOf("") }
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .paint(
+                painterResource(R.drawable.login_background), contentScale = ContentScale.Crop
+            ), contentAlignment = Alignment.Center
+    ) {
         IconButton(
             onClick = { navController.popBackStack() },
             modifier = Modifier
@@ -54,33 +64,35 @@ fun LoginScreen(navController: NavHostController) {
                 lineHeight = 52.sp,
                 color = colorResource(R.color.grey),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally).padding(vertical = 32.dp)
             )
             OutlinedTextField(
+                colors = OutlinedTextFieldDefaults.colors(focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White),
                 value = email.value,
                 onValueChange = { newText -> email.value = newText },
                 placeholder = { Text(stringResource(R.string.email)) },
                 maxLines = 1,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.9f),
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 24.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
             OutlinedTextField(
+                colors = OutlinedTextFieldDefaults.colors(focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White),
                 value = passwd.value,
                 onValueChange = { newText -> passwd.value = newText },
                 placeholder = { Text(stringResource(R.string.password)) },
                 maxLines = 1,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.9f),
+                modifier = Modifier.fillMaxWidth(0.9f).padding(bottom = 135.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
             Row(
                 modifier = Modifier.fillMaxWidth(0.9f),
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween
             ) {
-                SmallButton(func = {}, text = stringResource(R.string.register))
                 SmallButton(func = {}, text = stringResource(R.string.login))
             }
-        }
     }
-}
+}}

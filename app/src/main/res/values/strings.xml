@@ -5,6 +5,9 @@
     <string name="register">Регистрация</string>
     <string name="enter">Вход</string>
     <string name="email">Адрес электронной почты</string>
+    <string name="SNP">Фамилия имя отчество</string>
+    <string name="birth_date">Дата рождения</string>
     <string name="password">Пароль</string>
     <string name="enregister">Зарегестрироваться</string>
+    <string name="last_requests">Последние запросы</string>
 </resources>
