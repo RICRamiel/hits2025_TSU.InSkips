@@ -33,10 +33,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.team8.tsuinskips.domain.UserLogin
+import com.team8.tsuinskips.viewModel.LoginViewModel
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, vm: LoginViewModel = viewModel()) {
     val email = remember { mutableStateOf("") }
     val passwd = remember { mutableStateOf("") }
     Box(
@@ -64,7 +67,7 @@ fun LoginScreen(navController: NavHostController) {
                 lineHeight = 52.sp,
                 color = colorResource(R.color.grey),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally).padding(vertical = 32.dp)
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
             )
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(focusedContainerColor = Color.White,
@@ -74,7 +77,7 @@ fun LoginScreen(navController: NavHostController) {
                 placeholder = { Text(stringResource(R.string.email)) },
                 maxLines = 1,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 24.dp),
+                modifier = Modifier.fillMaxWidth(0.9f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
             OutlinedTextField(
@@ -85,14 +88,20 @@ fun LoginScreen(navController: NavHostController) {
                 placeholder = { Text(stringResource(R.string.password)) },
                 maxLines = 1,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.9f).padding(bottom = 135.dp),
+                modifier = Modifier.fillMaxWidth(0.9f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween
-            ) {
-                SmallButton(func = {}, text = stringResource(R.string.login))
-            }
+            SmallButton(
+                func = { vm.login(UserLogin(email.value, passwd.value)) },
+                text = stringResource(R.string.login)
+            )
+//            Row(
+//                modifier = Modifier.fillMaxWidth(0.9f),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                SmallButton(func = {}, text = stringResource(R.string.register))
+//
+//            }
+        }
     }
-}}
+}

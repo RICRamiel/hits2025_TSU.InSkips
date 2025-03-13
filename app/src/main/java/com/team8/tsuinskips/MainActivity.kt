@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.team8.tsuinskips.domain.useCase.LoginUseCase
+import com.team8.tsuinskips.viewModel.LoginViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,7 +99,7 @@ fun SmallButton(
         ), modifier = Modifier
             .padding(paddingValuesButton)
             .height(61.dp)
-            .widthIn(165.dp, 200.dp)
+            .fillMaxWidth(0.9f)
     ) {
         Text(
             text = text,
