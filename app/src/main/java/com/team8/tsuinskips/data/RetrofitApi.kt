@@ -1,6 +1,7 @@
 package com.team8.tsuinskips.data
 
 import com.team8.tsuinskips.data.datasource.ApiUser
+import com.team8.tsuinskips.domain.Token
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -10,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitApi {
     private const val BASE_URL = "http://192.168.0.114:8080/"
+    private var token = " "
     private val client = OkHttpClient()
     private val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
@@ -17,7 +19,7 @@ object RetrofitApi {
         client.newBuilder().addInterceptor(interceptor).addInterceptor(Interceptor { chain ->
             val original: Request = chain.request()
             val requestBuilder: Request.Builder = original.newBuilder().header(
-                "Authorization", "Bearer " + ""
+                "Authorization", "Bearer $token"
             )
 
             val request: Request = requestBuilder.build()
@@ -31,5 +33,9 @@ object RetrofitApi {
     }
     val Auth: ApiUser by lazy {
         retrofit.create(ApiUser::class.java)
+    }
+
+    fun updateToken(tokenJ: Token) {
+        token = tokenJ.key
     }
 }

@@ -38,14 +38,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.team8.tsuinskips.domain.UserLogin
+import com.team8.tsuinskips.domain.UserRegister
+import com.team8.tsuinskips.domain.useCase.RegisterUseCase
+import com.team8.tsuinskips.viewModel.RegisterViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(navController: NavHostController) {
+fun SignUpScreen(navController: NavHostController,vm: RegisterViewModel = viewModel()) {
     val email = remember { mutableStateOf("") }
     val passwd = remember { mutableStateOf("") }
     val SNP = remember { mutableStateOf("") }
@@ -156,7 +160,7 @@ fun SignUpScreen(navController: NavHostController) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
             SmallButton(
-                func = { navController.navigate("request")},
+                func = { vm.register(UserRegister(SNP.value.split("\\s".toRegex())[1],email.value,SNP.value.split("\\s".toRegex())[0],SNP.value.split("\\s".toRegex())[2],passwd.value))},
                 text = stringResource(R.string.register)
             )
         }
