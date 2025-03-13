@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.team8.tsuinskips.domain.UserLogin
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -154,12 +155,10 @@ fun SignUpScreen(navController: NavHostController) {
                     .padding(bottom = 135.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween
-            ) {
-                SmallButton(func = {navController.navigate("request")}, text = stringResource(R.string.register))
-            }
+            SmallButton(
+                func = { navController.navigate("request")},
+                text = stringResource(R.string.register)
+            )
         }
         if (showDatePicker) {
             val datePickerState = rememberDatePickerState(

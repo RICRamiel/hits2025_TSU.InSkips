@@ -67,7 +67,7 @@ fun LoginScreen(navController: NavHostController, vm: LoginViewModel = viewModel
                 lineHeight = 52.sp,
                 color = colorResource(R.color.grey),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally).padding(24.dp)
             )
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(focusedContainerColor = Color.White,
@@ -77,7 +77,7 @@ fun LoginScreen(navController: NavHostController, vm: LoginViewModel = viewModel
                 placeholder = { Text(stringResource(R.string.email)) },
                 maxLines = 1,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.9f),
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 24.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
             OutlinedTextField(
@@ -88,7 +88,7 @@ fun LoginScreen(navController: NavHostController, vm: LoginViewModel = viewModel
                 placeholder = { Text(stringResource(R.string.password)) },
                 maxLines = 1,
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.9f),
+                modifier = Modifier.fillMaxWidth(0.9f).padding(bottom = 135.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
             SmallButton(
