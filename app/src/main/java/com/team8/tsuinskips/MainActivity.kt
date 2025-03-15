@@ -1,6 +1,7 @@
 package com.team8.tsuinskips
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,8 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.team8.tsuinskips.domain.useCase.LoginUseCase
-import com.team8.tsuinskips.viewModel.LoginViewModel
+import com.team8.tsuinskips.data.RetrofitApi
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +35,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppNav()
+        }
+        if (RetrofitApi.getToken().isNotEmpty()) {
+            Toast.makeText(baseContext, RetrofitApi.getToken(), Toast.LENGTH_LONG).show()
         }
     }
 }
@@ -50,8 +51,8 @@ fun AppNav() {
     ) {
         composable("home") { StartScreen(navController) }
         composable("login") { LoginScreen(navController) }
-        composable("register"){ SignUpScreen(navController)}
-        composable("request"){ RequestsScreen(navController)}
+        composable("register") { SignUpScreen(navController) }
+        composable("request") { RequestsScreen(navController) }
     }
 }
 
