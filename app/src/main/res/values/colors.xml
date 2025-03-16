@@ -10,4 +10,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="greyMenu">#FF6A6A6A</color>
     <color name="redText">#FFFF7474</color>
+    <color name="orangeFamily">#FCA130</color>
+    <color name="greenIll">#55D468</color>
+    <color name="blueTrip">#58DEDE</color>
 </resources>
