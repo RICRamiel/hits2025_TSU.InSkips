@@ -10,4 +10,5 @@
     <string name="password">Пароль</string>
     <string name="enregister">Зарегестрироваться</string>
     <string name="last_requests">Последние запросы</string>
+    <string name="skips_list">Список пропусков</string>
 </resources>

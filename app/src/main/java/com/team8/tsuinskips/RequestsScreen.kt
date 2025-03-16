@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -42,8 +45,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,8 +59,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.kizitonwose.calendar.compose.HorizontalCalendar
+import com.kizitonwose.calendar.compose.rememberCalendarState
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.daysOfWeek
 import com.team8.tsuinskips.viewModel.RequestsViewModel
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = viewModel()) {
@@ -138,7 +151,7 @@ fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = vie
                         label = { Text(item, fontSize = 22.sp) },
                         selected = selectedItem.value == item,
                         onClick = {
-                            scope.launch { drawerState.close() }
+                            scope.launch { drawerState.close()}
                             selectedItem.value = item
                             println(item)
                         },
@@ -162,7 +175,83 @@ fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = vie
             if (selectedItem.value == "Мои пропуски") {
                 LastRequests(cardList)
             }
+            if (selectedItem.value == "Список пропусков") {
+                ListSkips()
+            }
         })
+}
+
+@Composable
+fun ListSkips(){
+    val currentMonth = remember { YearMonth.now() }
+    val startMonth = remember { currentMonth.minusMonths(100) }
+    val endMonth = remember { currentMonth.plusMonths(100) }
+    val daysOfWeek = remember { daysOfWeek() }
+
+    val state = rememberCalendarState(
+        startMonth = startMonth,
+        endMonth = endMonth,
+        firstVisibleMonth = currentMonth,
+        firstDayOfWeek = daysOfWeek.first(),
+    )
+
+    Box(
+        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter
+    ) {
+        Text(
+            text = stringResource(R.string.skips_list),
+            modifier = Modifier
+                .padding(top = 56.dp)
+                .padding(end = 20.dp)
+                .background((colorResource(R.color.white))),
+            color = Color.Black,
+            fontSize = 20.sp
+        )
+    }
+
+    Box(
+        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
+    ){
+        IconButton(onClick = { "TODO"},
+            modifier = Modifier.padding(28.dp, 56.dp).size(24.dp),
+            content = { Icon(painterResource(R.drawable.filter), "Фильтр") })
+    }
+
+    HorizontalCalendar(
+
+        modifier = Modifier
+            .padding(top = 128.dp, start = 20.dp, end = 20.dp),
+        state = state,
+        dayContent = { Day(it) },
+        monthHeader = { month ->
+            val daysOfWeek = month.weekDays.first().map { it.date.dayOfWeek }
+            MonthHeader(daysOfWeek = daysOfWeek)
+        }
+    )
+}
+
+@Composable
+fun Day(day: CalendarDay) {
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = day.date.dayOfMonth.toString())
+    }
+}
+
+@Composable
+fun MonthHeader(daysOfWeek: List<DayOfWeek>) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        for (dayOfWeek in daysOfWeek) {
+            Text(
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+            )
+        }
+    }
 }
 
 @Composable
