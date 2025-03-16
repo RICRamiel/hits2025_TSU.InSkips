@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.team8.tsuinskips.data.datasource.Status
+import com.team8.tsuinskips.data.datasource.Type
 import com.team8.tsuinskips.viewModel.RequestsViewModel
 import kotlinx.coroutines.launch
 
@@ -63,18 +65,20 @@ fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = vie
     val selectedItem = remember { mutableStateOf(navigationDrawerItems[0]) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val profile = vm.profile.collectAsState()
+    val reqList = vm.requests.collectAsState()
     val scope = rememberCoroutineScope()
     vm.getUserProfile()
-    val cardList = (1..10).map {
-        Card(
-            "болезнь",
-            "Полушкин Василий Игоревич",
-            "972303",
-            "подтверждено",
-            "28.05.2005",
-            "29.07.2222"
-        )
-    }
+//    val cardList = (1..10).map {
+//        RequestCard(
+//            "болезнь",
+//            "Полушкин Василий Игоревич",
+//            "972303",
+//            "подтверждено",
+//            "28.05.2005",
+//            "29.07.2222"
+//        )
+//    }
+
 
     ModalNavigationDrawer(drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
@@ -160,13 +164,25 @@ fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = vie
                     content = { Icon(Icons.Filled.Menu, "Меню") })
             }
             if (selectedItem.value == "Мои пропуски") {
+                vm.getRequestList()
+
+                val cardList = reqList.value.requests.map {
+                    RequestCard(
+                        typeToString(it.type),
+                        "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
+                        it.creator.groupName,
+                        statusToString(it.status),
+                        it.startDate,
+                        it.endDate
+                    )
+                }
                 LastRequests(cardList)
             }
         })
 }
 
 @Composable
-fun LastRequests(cardList: List<Card>) {
+fun LastRequests(cardList: List<RequestCard>) {
     Box(
         modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
     ) {
@@ -199,12 +215,12 @@ fun LastRequests(cardList: List<Card>) {
 
 
 @Composable
-fun ListItem(card: Card) {
+fun ListItem(card: RequestCard) {
 
     val borderColor = when (card.reason) {
-        "болезнь" -> Color.Green
-        "семья" -> Color.Yellow
-        "командировка" -> Color.Blue
+        "болезнь" -> colorResource(R.color.greenIll)
+        "семья" -> colorResource(R.color.orangeFamily)
+        "командировка" -> colorResource(R.color.blueTrip)
         else -> Color.Gray
     }
 
@@ -334,7 +350,27 @@ fun ListItem(card: Card) {
     }
 }
 
-data class Card(
+fun typeToString(reason: Type): String {
+    if (reason == Type.FAMILY) {
+        return "семья"
+    }
+    if (reason == Type.SICK) {
+        return "болезнь"
+    }
+    return "командировка"
+}
+
+fun statusToString(reason: Status): String {
+    if (reason == Status.IN_QUEUE) {
+        return "в очереди"
+    }
+    if (reason == Status.APPROVED) {
+        return "подтверждено"
+    }
+    return "отклонено"
+}
+
+data class RequestCard(
     val reason: String,
     val SNP: String,
     val groupName: String,

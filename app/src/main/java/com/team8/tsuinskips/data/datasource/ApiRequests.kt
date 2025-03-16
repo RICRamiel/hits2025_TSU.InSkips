@@ -1,8 +1,21 @@
 package com.team8.tsuinskips.data.datasource
 
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface ApiRequests {
     @PUT("requests/{id}/prolong")
-    fun prolongRequest()
+    suspend fun prolongRequest(
+        @Path("id") id: String, @Body prolongDTO: RequestProlongDTO
+    ): Response<String>
+
+    @POST("requests")
+    suspend fun createRequest(@Body createModelDTO: RequestCreateModelDTO): Response<String>
+
+    @GET("requests/my")
+    suspend fun getRequests(): Response<RequestPagedListDTO>
 }
