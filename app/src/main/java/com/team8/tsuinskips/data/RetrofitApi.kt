@@ -1,5 +1,6 @@
 package com.team8.tsuinskips.data
 
+import com.team8.tsuinskips.data.datasource.ApiRequests
 import com.team8.tsuinskips.data.datasource.ApiUser
 import com.team8.tsuinskips.domain.Token
 import okhttp3.Interceptor
@@ -33,6 +34,10 @@ object RetrofitApi {
     }
     val Auth: ApiUser by lazy {
         retrofit.create(ApiUser::class.java)
+    }
+
+    val Requests: ApiRequests by lazy {
+        retrofit.create(ApiRequests::class.java)
     }
 
     fun updateToken(tokenJ: Token) {
