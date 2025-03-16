@@ -2,6 +2,8 @@ package com.team8.tsuinskips.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val greyMenu = Color(0xFF6A6A6A)
+
 val greenIll = Color(0xFF55D468)
 val orangeFamily = Color(0xFFFCA130)
 val blueTrip = Color(0xFF58DEDE)

@@ -4,4 +4,5 @@ interface UserInterface {
     suspend fun register(userRegister: UserRegister): Token
     suspend fun login(userLogin: UserLogin): Token
     suspend fun logout()
+    suspend fun getProfile(): User
 }

@@ -2,6 +2,7 @@ package com.team8.tsuinskips
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,15 +10,20 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.DrawerValue
@@ -30,6 +36,7 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,18 +47,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.team8.tsuinskips.viewModel.RequestsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun RequestsScreen(navController: NavHostController) {
-    val navigationDrawerItems = listOf("Home", "Hello", "HOW")
+fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = viewModel()) {
+    val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков")
     val selectedItem = remember { mutableStateOf(navigationDrawerItems[0]) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val profile = vm.profile.collectAsState()
     val scope = rememberCoroutineScope()
-
+    vm.getUserProfile()
     val cardList = (1..10).map {
         Card(
             "болезнь",
@@ -63,6 +76,110 @@ fun RequestsScreen(navController: NavHostController) {
         )
     }
 
+    ModalNavigationDrawer(drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
+        drawerContent = {
+            ModalDrawerSheet(
+                drawerContainerColor = Color.DarkGray,
+                drawerContentColor = Color.LightGray,
+                windowInsets = WindowInsets(top = 0.dp, bottom = 0.dp, right = 0.dp, left = 0.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(colorResource(R.color.greyMenu))
+                        .fillMaxWidth(0.8f)
+                        .fillMaxHeight(0.25f)
+                ) {
+                    IconButton(onClick = { scope.launch { drawerState.close() } },
+                        modifier = Modifier.padding(10.dp, 20.dp),
+                        content = { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Меню") })
+                    Text(
+                        text = "${profile.value.surname} ${profile.value.name} ${profile.value.patronymic} ",
+                        fontFamily = FontFamily(Font(R.font.istokweb_regular)),
+                        color = Color.White,
+                        textAlign = TextAlign.Left,
+                        fontSize = 20.sp,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 16.dp, bottom = 10.dp)
+                    )
+                    Text(
+                        text = profile.value.email,
+                        fontFamily = FontFamily(Font(R.font.istokweb_regular)),
+                        color = Color.White,
+                        textAlign = TextAlign.Left,
+                        fontSize = 20.sp,
+                        lineHeight = 29.sp,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(top = 60.dp)
+                            .padding(start = 16.dp)
+                    )
+                    Button(
+                        onClick = { TODO("ADD vm.logout(), so logoutUseCase to ViewModel") },
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent, contentColor = Color.Transparent
+                        )
+                    ) {
+                        Text(
+                            text = "Выйти",
+                            fontFamily = FontFamily(Font(R.font.istokweb_regular)),
+                            color = colorResource(R.color.redText),
+                            textAlign = TextAlign.Left,
+                            fontSize = 20.sp,
+                            lineHeight = 29.sp
+                        )
+                    }
+                }
+                navigationDrawerItems.forEach { item ->
+                    NavigationDrawerItem(
+                        label = { Text(item, fontSize = 22.sp) },
+                        selected = selectedItem.value == item,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            selectedItem.value = item
+                            println(item)
+                        },
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = Color.Transparent,
+                            unselectedContainerColor = Color.Transparent,
+                            selectedTextColor = Color.White,
+                            unselectedTextColor = Color.LightGray
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    )
+                }
+            }
+        },
+        content = {
+            Row {
+                IconButton(onClick = { scope.launch { drawerState.open() } },
+                    modifier = Modifier.padding(20.dp, 40.dp),
+                    content = { Icon(Icons.Filled.Menu, "Меню") })
+            }
+            if (selectedItem.value == "Мои пропуски") {
+                LastRequests(cardList)
+            }
+        })
+}
+
+@Composable
+fun LastRequests(cardList: List<Card>) {
+    Box(
+        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
+    ) {
+        Text(
+            text = stringResource(R.string.last_requests),
+            modifier = Modifier
+                .padding(top = 56.dp)
+                .padding(end = 20.dp)
+                .background((colorResource(R.color.white))),
+            color = Color.Black,
+            fontSize = 20.sp
+        )
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -78,70 +195,6 @@ fun RequestsScreen(navController: NavHostController) {
             ListItem(card = card)
         }
     }
-
-//    Box(
-//        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopStart
-//    ) {
-//        IconButton(
-//            onClick = { scope.launch { drawerState.open() } },
-//            modifier = Modifier
-//                .align(Alignment.TopStart)
-//                .padding(20.dp, 40.dp)
-//                .size(48.dp)
-//        ) {
-//            Icon(
-//                imageVector = Icons.Default.Menu,
-//                contentDescription = "",
-//                modifier = Modifier.size(48.dp)
-//            )
-//        }
-//    }
-
-    Box(
-        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
-    ) {
-        Text(
-            text = stringResource(R.string.last_requests),
-            modifier = Modifier
-                .padding(top = 56.dp)
-                .padding(end = 20.dp)
-                .background((colorResource(R.color.white))),
-            color = Color.Black,
-            fontSize = 20.sp
-        )
-    }
-
-    ModalNavigationDrawer(drawerState = drawerState, gesturesEnabled = false, drawerContent = {
-        ModalDrawerSheet(
-            drawerContainerColor = Color.DarkGray,
-            drawerContentColor = Color.LightGray,
-            windowInsets = WindowInsets(0.dp, 0.dp, 150.dp, 0.dp)
-        ) {
-            navigationDrawerItems.forEach { item ->
-                NavigationDrawerItem(
-                    label = { Text(item, fontSize = 22.sp) },
-                    selected = selectedItem.value == item,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        selectedItem.value = item
-                    },
-                    colors = NavigationDrawerItemDefaults.colors(
-                        selectedContainerColor = Color.Transparent,
-                        unselectedContainerColor = Color.Transparent,
-                        selectedTextColor = Color.White,
-                        unselectedTextColor = Color.LightGray
-                    )
-                )
-            }
-        }
-    }, content = {
-        Row {
-            IconButton(onClick = { scope.launch { drawerState.open() } },
-                modifier = Modifier.padding(20.dp, 40.dp),
-                content = { Icon(Icons.Filled.Menu, "Меню") })
-        }
-    })
-
 }
 
 

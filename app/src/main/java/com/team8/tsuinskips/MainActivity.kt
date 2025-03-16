@@ -36,9 +36,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppNav()
         }
-        if (RetrofitApi.getToken().isNotEmpty()) {
-            Toast.makeText(baseContext, RetrofitApi.getToken(), Toast.LENGTH_LONG).show()
-        }
     }
 }
 
