@@ -10,7 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitApi {
-    private const val BASE_URL = "http://192.168.0.114:8080/"
+    private const val BASE_URL = "http://192.168.0.114:39965/"
     private var token = " "
     private val client = OkHttpClient()
     private val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -37,5 +37,9 @@ object RetrofitApi {
 
     fun updateToken(tokenJ: Token) {
         token = tokenJ.key
+    }
+
+    fun getToken(): String {
+        return token
     }
 }
