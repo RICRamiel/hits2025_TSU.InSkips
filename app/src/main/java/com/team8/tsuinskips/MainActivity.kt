@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TSUInSkipsTheme{
+            TSUInSkipsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AppNav(
                         modifier = Modifier.padding(innerPadding)
@@ -54,13 +54,13 @@ fun AppNav(
 ) {
     val navController = rememberNavController()
     NavHost(
-        navController = navController, startDestination = "new_request"
+        navController = navController, startDestination = "home"
     ) {
         composable("home") { StartScreen(modifier, navController) }
         composable("login") { LoginScreen(modifier, navController) }
-        composable("register"){ SignUpScreen(modifier, navController)}
-        composable("request"){ RequestsScreen(modifier, navController)}
-        composable("new_request"){ NewRequestScreen(modifier, navController)}
+        composable("register") { SignUpScreen(modifier, navController) }
+        composable("request") { RequestsScreen(modifier, navController) }
+        composable("new_request") { NewRequestScreen(modifier, navController) }
     }
 }
 
@@ -71,19 +71,18 @@ fun ParametrButton(
     text: String,
     oX: Dp = 0.dp,
     oY: Dp = 0.dp,
-    fraction: Float = 0.7f
+    fraction: Float = 0.7f,
+    modifier: Modifier = Modifier
+        .padding(paddingValuesButton)
+        .offset(oX, oY)
+        .fillMaxWidth(fraction)
+        .height(61.dp)
 ) {
     Button(
-        onClick = func,
-        shape = RoundedCornerShape(16.dp),
-        colors = ButtonColors(
+        onClick = func, shape = RoundedCornerShape(16.dp), colors = ButtonColors(
             colorResource(R.color.grey), Color.White, Color.Unspecified, Color.Unspecified
-        ),
-        modifier = Modifier
-            .padding(paddingValuesButton)
-            .offset(oX, oY)
-            .fillMaxWidth(fraction)
-            .height(61.dp)
+        ), modifier = modifier
+
     ) {
         Text(
             text = text,

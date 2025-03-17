@@ -1,7 +1,13 @@
 package com.team8.tsuinskips
 
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,33 +28,52 @@ import com.team8.tsuinskips.ui.theme.TSUInSkipsTheme
 
 @Composable
 fun StartScreen(
-    modifier: Modifier = Modifier,
-    navController: NavController
+    modifier: Modifier = Modifier, navController: NavController
 ) {
     Box(
         modifier
-        .fillMaxSize(1f)
+            .fillMaxSize(1f)
             .paint(
                 painterResource(R.drawable.login_background), contentScale = ContentScale.Crop
             ), contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = stringResource(R.string.hello),
-            fontFamily = FontFamily(Font(R.font.istokweb_bold)),
-            fontSize = 36.sp,
-            lineHeight = 52.sp,
-            color = colorResource(R.color.grey),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(67.dp, 130.dp, 66.dp, 570.dp)
-        )
-        ParametrButton(
-            func = { navController.navigate("login") },
-            text = stringResource(R.string.login),
-        )
-        ParametrButton(
-            func = { navController.navigate("register") },
-            text = stringResource(R.string.enregister),
-            oY = 80.dp,
-        )
+        Column(
+            Modifier
+                .fillMaxHeight(0.7f)
+                .align(Alignment.Center)
+        ) {
+            Text(
+                text = stringResource(R.string.hello),
+                fontFamily = FontFamily(Font(R.font.istokweb_bold)),
+                fontSize = 36.sp,
+                lineHeight = 52.sp,
+                color = colorResource(R.color.grey),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 67.dp, end = 66.dp, bottom = 160.dp)
+            )
+            ParametrButton(
+                func = { navController.navigate("login") },
+                text = stringResource(R.string.login),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth(0.7f)
+                    .height(61.dp)
+
+            )
+            Spacer(
+                Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+            )
+            ParametrButton(
+                func = { navController.navigate("register") },
+                text = stringResource(R.string.enregister),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth(0.7f)
+                    .height(61.dp)
+            )
+        }
+
     }
 }
