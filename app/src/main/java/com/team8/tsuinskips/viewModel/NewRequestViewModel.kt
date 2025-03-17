@@ -10,6 +10,7 @@ import com.team8.tsuinskips.data.datasource.MissRequestType
 import com.team8.tsuinskips.data.repository.RequestRepository
 import com.team8.tsuinskips.domain.Attachment
 import com.team8.tsuinskips.domain.RequestCreateModel
+import com.team8.tsuinskips.presentation.models.AttachFileItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,18 +19,26 @@ import java.time.LocalDate
 
 class NewRequestViewModel : ViewModel() {
 
-    private val _selectedImagesUris: MutableStateFlow<List<Uri>> = MutableStateFlow(listOf())
-    val selectedImagesUris: StateFlow<List<Uri>> = _selectedImagesUris.asStateFlow()
+    private val _selectedImages: MutableStateFlow<List<AttachFileItem>> = MutableStateFlow(listOf())
+    val selectedImages: StateFlow<List<AttachFileItem>> = _selectedImages.asStateFlow()
 
-    fun attachNewConfirmationFile(uri: Uri) {
+    fun attachNewConfirmationFile(file: AttachFileItem) {
         viewModelScope.launch {
-            _selectedImagesUris.value = _selectedImagesUris.value.toMutableList() + uri
+            _selectedImages.value = _selectedImages.value.toMutableList() + file
+        }
+    }
+
+    fun changeConfirmationFileName(index: Int, name: String) {
+        viewModelScope.launch {
+            val images = _selectedImages.value.toMutableList()
+            images[index] = images[index].copy(name = name)
+            _selectedImages.value = images
         }
     }
 
     fun detachConfirmationFile(index: Int) {
         viewModelScope.launch {
-            _selectedImagesUris.value = _selectedImagesUris.value.toMutableList().apply { removeAt(index) }
+            _selectedImages.value = _selectedImages.value.toMutableList().apply { removeAt(index) }
         }
     }
 
@@ -40,10 +49,10 @@ class NewRequestViewModel : ViewModel() {
                     startDate = from,
                     endDate = to,
                     missRequestType = type,
-                    confirmationFiles = _selectedImagesUris.value.map { uri ->
+                    confirmationFiles = _selectedImages.value.map { file ->
                         Attachment(
-                            uri.lastPathSegment ?: "",
-                            loadBitmapFromUri(uri)
+                            file.name,
+                            loadBitmapFromUri(file.uri)
                         )
                     }
                 ))
