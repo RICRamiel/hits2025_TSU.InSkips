@@ -11,4 +11,8 @@
     <string name="enregister">Зарегестрироваться</string>
     <string name="last_requests">Последние запросы</string>
     <string name="skips_list">Список пропусков</string>
+    <string name="pick_dates">Выберете даты</string>
+    <string name="pick_file">Выберете файл</string>
+    <string name="selected_image">Выбранное изображение</string>
+    <string name="add">Добавить</string>
 </resources>

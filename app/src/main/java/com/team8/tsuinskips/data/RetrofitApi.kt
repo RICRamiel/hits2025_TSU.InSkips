@@ -1,5 +1,6 @@
 package com.team8.tsuinskips.data
 
+import com.team8.tsuinskips.BuildConfig
 import com.team8.tsuinskips.data.datasource.ApiRequests
 import com.team8.tsuinskips.data.datasource.ApiUser
 import com.team8.tsuinskips.domain.Token
@@ -11,7 +12,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitApi {
-    private const val BASE_URL = "http://90.188.93.70:39965/"
+    private val BASE_URL
+        get() = BuildConfig.RETROFIT_BASE_URL
     private var token = " "
     private val client = OkHttpClient()
     private val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)

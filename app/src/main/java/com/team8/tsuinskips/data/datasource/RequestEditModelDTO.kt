@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 data class RequestEditModelDTO(
     @SerializedName("startDate") val startDate: String,
     @SerializedName("endDate") val endDate: String,
-    @SerializedName("type") val type: Type,
+    @SerializedName("type") val missRequestType: MissRequestType,
     @SerializedName("status") val status: String
 )

@@ -21,34 +21,34 @@ import androidx.navigation.NavController
 import com.team8.tsuinskips.ui.theme.TSUInSkipsTheme
 
 @Composable
-fun StartScreen(navController: NavController) {
-    TSUInSkipsTheme {
-        Box(
-            Modifier
-                .fillMaxSize(1f)
-                .paint(
-                    painterResource(R.drawable.login_background), contentScale = ContentScale.Crop
-                ), contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.hello),
-                fontFamily = FontFamily(Font(R.font.istokweb_bold)),
-                fontSize = 36.sp,
-                lineHeight = 52.sp,
-                color = colorResource(R.color.grey),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(67.dp, 130.dp, 66.dp, 570.dp)
-            )
-            ParametrButton(
-                func = { navController.navigate("login") },
-                text = stringResource(R.string.login),
-            )
-            ParametrButton(
-                func = { navController.navigate("register") },
-                text = stringResource(R.string.enregister),
-                oY = 80.dp,
-            )
-
-        }
+fun StartScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
+    Box(
+        modifier
+        .fillMaxSize(1f)
+            .paint(
+                painterResource(R.drawable.login_background), contentScale = ContentScale.Crop
+            ), contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.hello),
+            fontFamily = FontFamily(Font(R.font.istokweb_bold)),
+            fontSize = 36.sp,
+            lineHeight = 52.sp,
+            color = colorResource(R.color.grey),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(67.dp, 130.dp, 66.dp, 570.dp)
+        )
+        ParametrButton(
+            func = { navController.navigate("login") },
+            text = stringResource(R.string.login),
+        )
+        ParametrButton(
+            func = { navController.navigate("register") },
+            text = stringResource(R.string.enregister),
+            oY = 80.dp,
+        )
     }
 }
