@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,7 +43,11 @@ import com.team8.tsuinskips.domain.UserLogin
 import com.team8.tsuinskips.viewModel.LoginViewModel
 
 @Composable
-fun LoginScreen(navController: NavHostController, vm: LoginViewModel = viewModel()) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    vm: LoginViewModel = viewModel()
+) {
     val logged = vm.isLogged.collectAsState()
     val token = vm.token.collectAsState()
     if (logged.value) {
@@ -52,7 +57,7 @@ fun LoginScreen(navController: NavHostController, vm: LoginViewModel = viewModel
     val passwd = remember { mutableStateOf("") }
 
     Box(
-        Modifier
+        modifier
             .fillMaxSize()
             .paint(
                 painterResource(R.drawable.login_background), contentScale = ContentScale.Crop

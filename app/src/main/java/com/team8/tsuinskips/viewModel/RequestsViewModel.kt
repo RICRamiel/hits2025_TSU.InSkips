@@ -47,7 +47,6 @@ class RequestsViewModel(
         viewModelScope.launch {
             val resp = getRequestsUseCase()
             _requests.value = resp
-            Log.i("LIST", resp.requests[0].id)
         }
     }
 }

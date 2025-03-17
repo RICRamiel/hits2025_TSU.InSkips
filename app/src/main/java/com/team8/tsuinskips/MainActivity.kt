@@ -5,15 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,30 +28,39 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.team8.tsuinskips.domain.useCase.LoginUseCase
-import com.team8.tsuinskips.viewModel.LoginViewModel
+import com.team8.tsuinskips.ui.theme.TSUInSkipsTheme
+import com.team8.tsuinskips.viewModel.NewRequestViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppNav()
+            TSUInSkipsTheme{
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    AppNav(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
         }
     }
 }
 
 
 @Composable
-fun AppNav() {
+fun AppNav(
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
     NavHost(
-        navController = navController, startDestination = "home"
+        navController = navController, startDestination = "new_request"
     ) {
-        composable("home") { StartScreen(navController) }
-        composable("login") { LoginScreen(navController) }
-        composable("register"){ SignUpScreen(navController)}
-        composable("request"){ RequestsScreen(navController)}
+        composable("home") { StartScreen(modifier, navController) }
+        composable("login") { LoginScreen(modifier, navController) }
+        composable("register"){ SignUpScreen(modifier, navController)}
+        composable("request"){ RequestsScreen(modifier, navController)}
+        composable("new_request"){ NewRequestScreen(modifier, navController)}
     }
 }
 

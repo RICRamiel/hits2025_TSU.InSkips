@@ -49,7 +49,11 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(navController: NavHostController,vm: RegisterViewModel = viewModel()) {
+fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    vm: RegisterViewModel = viewModel()
+) {
     val email = remember { mutableStateOf("") }
     val passwd = remember { mutableStateOf("") }
     val SNP = remember { mutableStateOf("") }
@@ -57,7 +61,7 @@ fun SignUpScreen(navController: NavHostController,vm: RegisterViewModel = viewMo
     var birthdate by remember { mutableStateOf(LocalDate.now()) }
     var showDatePicker by remember { mutableStateOf(false) }
     Box(
-        Modifier
+        modifier
             .fillMaxSize()
             .paint(
                 painterResource(R.drawable.login_background), contentScale = ContentScale.Crop

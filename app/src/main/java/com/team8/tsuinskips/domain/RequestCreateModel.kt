@@ -1,11 +1,11 @@
 package com.team8.tsuinskips.domain
 
-import com.team8.tsuinskips.data.datasource.Attachment
-import com.team8.tsuinskips.data.datasource.Type
+import com.team8.tsuinskips.data.datasource.MissRequestType
+import java.time.LocalDate
 
 data class RequestCreateModel(
-    val startDate: String,
-    val endDate: String,
-    val type: Type,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val missRequestType: MissRequestType,
     val confirmationFiles: List<Attachment>
 )

@@ -1,6 +1,10 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -18,6 +22,23 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        fun loadLocalProperties(
+            propertyKey: String,
+            buildConfigFieldName: String? = null
+        ) {
+            val localProperties = Properties().apply {
+                val localPropertiesFile = rootProject.file("local.properties")
+                if (localPropertiesFile.exists()) {
+                    load(localPropertiesFile.inputStream())
+                }
+            }
+
+            val propertyValue = localProperties.getProperty(propertyKey, "\"NOT_FOUND\"")
+            val fieldName = buildConfigFieldName ?: propertyKey
+            buildConfigField("String", fieldName, propertyValue)
+        }
+        loadLocalProperties("retrofit.baseUrl", "RETROFIT_BASE_URL")
     }
 
     buildTypes {
@@ -37,10 +58,11 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
+    //composeOptions {
+    //    kotlinCompilerExtensionVersion = "1.5.1"
+    //}
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -64,6 +86,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.test.android)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
@@ -73,4 +96,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation (libs.core)
+    implementation (libs.calendar)
+    implementation (libs.state)
+    implementation (libs.coil.compose)
 }

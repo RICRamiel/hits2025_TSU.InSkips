@@ -7,7 +7,7 @@ object UserRegisterMapper {
     fun map(dto: UserRegisterDTO): UserRegister {
         return with(dto) {
             UserRegister(
-                username, email, surname, patronymic, password
+                name, email, surname, patronymic, password
             )
         }
     }
@@ -15,7 +15,7 @@ object UserRegisterMapper {
     fun map(dto: UserRegister): UserRegisterDTO {
         return with(dto) {
             UserRegisterDTO(
-                username, email, surname, patronymic, password
+                name, email, surname, patronymic, password
             )
         }
     }

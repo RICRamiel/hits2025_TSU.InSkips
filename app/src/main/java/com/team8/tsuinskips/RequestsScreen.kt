@@ -2,7 +2,6 @@ package com.team8.tsuinskips
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -61,7 +58,7 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.team8.tsuinskips.data.datasource.Status
-import com.team8.tsuinskips.data.datasource.Type
+import com.team8.tsuinskips.data.datasource.MissRequestType
 import com.team8.tsuinskips.viewModel.RequestsViewModel
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -70,7 +67,11 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = viewModel()) {
+fun RequestsScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    vm: RequestsViewModel = viewModel()
+) {
     val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков")
     val selectedItem = remember { mutableStateOf(navigationDrawerItems[0]) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -168,7 +169,9 @@ fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = vie
             }
         },
         content = {
-            Row {
+            Row(
+                modifier = modifier
+            ) {
                 IconButton(onClick = { scope.launch { drawerState.open() } },
                     modifier = Modifier.padding(20.dp, 40.dp),
                     content = { Icon(Icons.Filled.Menu, "Меню") })
@@ -178,7 +181,7 @@ fun RequestsScreen(navController: NavHostController, vm: RequestsViewModel = vie
 
                 val cardList = reqList.value.requests.map {
                     RequestCard(
-                        typeToString(it.type),
+                        typeToString(it.missRequestType),
                         "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
                         it.creator.groupName,
                         statusToString(it.status),
@@ -436,11 +439,11 @@ fun ListItem(card: RequestCard) {
     }
 }
 
-fun typeToString(reason: Type): String {
-    if (reason == Type.FAMILY) {
+fun typeToString(reason: MissRequestType): String {
+    if (reason == MissRequestType.FAMILY) {
         return "семья"
     }
-    if (reason == Type.SICK) {
+    if (reason == MissRequestType.SICK) {
         return "болезнь"
     }
     return "командировка"

@@ -9,7 +9,7 @@ data class RequestDTO(
     @SerializedName("startDate") val startDate: String,
     @SerializedName("endDate") val endDate: String,
     @SerializedName("creator") val creator: StudentDTO,
-    @SerializedName("type") val type: Type,
+    @SerializedName("type") val missRequestType: MissRequestType,
     @SerializedName("status") val status: Status,
     @SerializedName("confirmationFiles") val confirmationFiles: List<ConfirmationFileDTO>
 )
