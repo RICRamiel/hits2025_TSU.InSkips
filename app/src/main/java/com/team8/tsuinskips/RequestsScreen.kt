@@ -68,7 +68,6 @@ import java.util.Locale
 
 @Composable
 fun RequestsScreen(
-    modifier: Modifier = Modifier,
     navController: NavHostController,
     vm: RequestsViewModel = viewModel()
 ) {
@@ -105,8 +104,9 @@ fun RequestsScreen(
                         .fillMaxWidth(0.8f)
                         .fillMaxHeight(0.25f)
                 ) {
-                    IconButton(onClick = { scope.launch { drawerState.close() } },
-                        modifier = Modifier.padding(10.dp, 20.dp),
+                    IconButton(
+                        modifier = Modifier.padding(10.dp,20.dp),
+                        onClick = { scope.launch { drawerState.close() } },
                         content = { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Меню") })
                     Text(
                         text = "${profile.value.surname} ${profile.value.name} ${profile.value.patronymic} ",
@@ -170,7 +170,7 @@ fun RequestsScreen(
         },
         content = {
             Row(
-                modifier = modifier
+                modifier = Modifier
             ) {
                 IconButton(onClick = { scope.launch { drawerState.open() } },
                     modifier = Modifier.padding(20.dp, 40.dp),
@@ -198,7 +198,7 @@ fun RequestsScreen(
 }
 
 @Composable
-fun ListSkips(){
+fun ListSkips() {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(100) }
     val endMonth = remember { currentMonth.plusMonths(100) }
@@ -227,9 +227,11 @@ fun ListSkips(){
 
     Box(
         modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
-    ){
-        IconButton(onClick = { "TODO"},
-            modifier = Modifier.padding(28.dp, 56.dp).size(24.dp),
+    ) {
+        IconButton(onClick = { "TODO" },
+            modifier = Modifier
+                .padding(28.dp, 56.dp)
+                .size(24.dp),
             content = { Icon(painterResource(R.drawable.filter), "Фильтр") })
     }
 

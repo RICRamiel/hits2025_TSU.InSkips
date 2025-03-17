@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TSUInSkipsTheme {
+            TSUInSkipsTheme{
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AppNav(
                         modifier = Modifier.padding(innerPadding)
@@ -58,9 +58,9 @@ fun AppNav(
     ) {
         composable("home") { StartScreen(modifier, navController) }
         composable("login") { LoginScreen(modifier, navController) }
-        composable("register") { SignUpScreen(modifier, navController) }
-        composable("request") { RequestsScreen(modifier, navController) }
-        composable("new_request") { NewRequestScreen(modifier, navController) }
+        composable("register"){ SignUpScreen(modifier, navController)}
+        composable("request"){ RequestsScreen(navController)}
+        composable("new_request"){ NewRequestScreen(modifier, navController)}
     }
 }
 
