@@ -7,15 +7,17 @@ import com.team8.tsuinskips.domain.RequestList
 import com.team8.tsuinskips.domain.User
 import com.team8.tsuinskips.domain.useCase.GetProfileUseCase
 import com.team8.tsuinskips.domain.useCase.GetRequestsUseCase
+import com.team8.tsuinskips.domain.useCase.LogoutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class RequestsViewModel(
     private val getProfileUseCase: GetProfileUseCase = GetProfileUseCase(),
-    private val getRequestsUseCase: GetRequestsUseCase = GetRequestsUseCase()
+    private val getRequestsUseCase: GetRequestsUseCase = GetRequestsUseCase(),
+    private val logoutUseCase: LogoutUseCase = LogoutUseCase()
 ) : ViewModel() {
-    private var _profile = MutableStateFlow(User("", "", "", "", "", emptyList()))
+    private var _profile = MutableStateFlow(User("", "", "", "", "", emptyList(),""))
     var profile = _profile.asStateFlow()
     private var _requests = MutableStateFlow(RequestList(emptyList()))
     var requests = _requests.asStateFlow()
@@ -47,6 +49,12 @@ class RequestsViewModel(
         viewModelScope.launch {
             val resp = getRequestsUseCase()
             _requests.value = resp
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            val resp = logoutUseCase()
         }
     }
 }

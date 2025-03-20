@@ -1,4 +1,6 @@
 package com.team8.tsuinskips.data.datasource
 
-class ErrorResponseDTO {
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ErrorResponseDTO(val errors: List<String>)
