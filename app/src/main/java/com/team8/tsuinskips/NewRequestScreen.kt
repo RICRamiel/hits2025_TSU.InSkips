@@ -83,7 +83,6 @@ fun NewRequestScreen(
     var requestRange: Range<LocalDate>? by remember { mutableStateOf(null) }
     var selectedMissRequestType: MissRequestType? by remember { mutableStateOf(null) }
     val selectedImages = viewModel.selectedImages.collectAsState()
-    val imagesNames: List<String> by remember { mutableStateOf(listOf()) }
 
     var showDateRangePicker by remember { mutableStateOf(false) }
 
