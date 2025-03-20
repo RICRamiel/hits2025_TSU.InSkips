@@ -16,4 +16,8 @@
     <string name="selected_image">Выбранное изображение</string>
     <string name="add">Добавить</string>
     <string name="filename">Название файла</string>
+    <string name="surname">Фамилия</string>
+    <string name="subroup_name">Номер подгруппы</string>
+    <string name="group_name">Номер группы</string>
+    <string name="from_favorites">Из списка избранных</string>
 </resources>
