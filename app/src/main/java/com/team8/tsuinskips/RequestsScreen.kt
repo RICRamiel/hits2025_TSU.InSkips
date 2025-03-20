@@ -68,8 +68,7 @@ import java.util.Locale
 
 @Composable
 fun RequestsScreen(
-    navController: NavHostController,
-    vm: RequestsViewModel = viewModel()
+    navController: NavHostController, vm: RequestsViewModel = viewModel()
 ) {
     val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков", "Добавить пропуск")
     val selectedItem = remember { mutableStateOf(navigationDrawerItems[0]) }
@@ -104,8 +103,7 @@ fun RequestsScreen(
                         .fillMaxWidth(0.8f)
                         .fillMaxHeight(0.25f)
                 ) {
-                    IconButton(
-                        modifier = Modifier.padding(10.dp,20.dp),
+                    IconButton(modifier = Modifier.padding(10.dp, 20.dp),
                         onClick = { scope.launch { drawerState.close() } },
                         content = { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Меню") })
                     Text(
@@ -132,7 +130,7 @@ fun RequestsScreen(
                             .padding(start = 16.dp)
                     )
                     Button(
-                        onClick = { TODO("ADD vm.logout(), so logoutUseCase to ViewModel") },
+                        onClick = { vm.logout() },
                         modifier = Modifier.align(Alignment.BottomEnd),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent, contentColor = Color.Transparent
@@ -240,23 +238,19 @@ fun ListSkips() {
 
     HorizontalCalendar(
 
-        modifier = Modifier
-            .padding(top = 128.dp, start = 20.dp, end = 20.dp),
+        modifier = Modifier.padding(top = 128.dp, start = 20.dp, end = 20.dp),
         state = state,
         dayContent = { Day(it) },
         monthHeader = { month ->
             val daysOfWeek = month.weekDays.first().map { it.date.dayOfWeek }
             MonthHeader(daysOfWeek = daysOfWeek)
-        }
-    )
+        })
 }
 
 @Composable
 fun Day(day: CalendarDay) {
     Box(
-        modifier = Modifier
-            .aspectRatio(1f),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.aspectRatio(1f), contentAlignment = Alignment.Center
     ) {
         Text(text = day.date.dayOfMonth.toString())
     }

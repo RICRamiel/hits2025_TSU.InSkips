@@ -1,11 +1,13 @@
 package com.team8.tsuinskips.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.team8.tsuinskips.data.RetrofitApi
 import com.team8.tsuinskips.domain.Token
 import com.team8.tsuinskips.domain.UserLogin
 import com.team8.tsuinskips.domain.useCase.LoginUseCase
+import com.team8.tsuinskips.domain.useCase.LogoutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,9 +24,13 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             val resp = loginUseCase(login)
             RetrofitApi.updateToken(resp)
-            _isLogged.update { va ->
-                !va
+            if (resp.key.isNotEmpty()) {
+                _isLogged.update { va ->
+                    !va
+                }
             }
         }
     }
+
+
 }
