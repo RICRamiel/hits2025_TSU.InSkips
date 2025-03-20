@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ConfirmationFileDTO(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("attachDate") val attachDate: String
+    val id: String,
+    val name: String,
+    val attachDate: String
 )

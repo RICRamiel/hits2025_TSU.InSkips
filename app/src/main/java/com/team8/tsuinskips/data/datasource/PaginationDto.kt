@@ -4,9 +4,8 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RequestEditModelDTO(
-    val startDate: String,
-    val endDate: String,
-    val type: MissRequestType,
-    val status: String
+data class PaginationDto(
+    val page: Int,
+    val pageSize: Int,
+    val count: Int,
 )

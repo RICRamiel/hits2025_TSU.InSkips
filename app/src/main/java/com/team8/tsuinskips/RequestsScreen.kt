@@ -71,7 +71,7 @@ fun RequestsScreen(
     navController: NavHostController,
     vm: RequestsViewModel = viewModel()
 ) {
-    val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков")
+    val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков", "Добавить пропуск")
     val selectedItem = remember { mutableStateOf(navigationDrawerItems[0]) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val profile = vm.profile.collectAsState()
@@ -166,19 +166,6 @@ fun RequestsScreen(
                         modifier = Modifier.fillMaxWidth(0.8f)
                     )
                 }
-                NavigationDrawerItem( label = { Text(stringResource(R.string.create_request), fontSize = 22.sp) },
-                    selected = selectedItem.value == stringResource(R.string.create_request),
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        selectedItem.value = "Создать заявку"
-                    },
-                    colors = NavigationDrawerItemDefaults.colors(
-                        selectedContainerColor = Color.Transparent,
-                        unselectedContainerColor = Color.Transparent,
-                        selectedTextColor = Color.White,
-                        unselectedTextColor = Color.LightGray
-                    ),
-                    modifier = Modifier.fillMaxWidth(0.8f))
             }
         },
         content = {
@@ -196,7 +183,7 @@ fun RequestsScreen(
                     RequestCard(
                         typeToString(it.missRequestType),
                         "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
-                        it.creator.groupName,
+                        it.creator.groupName ?: "",
                         statusToString(it.status),
                         it.startDate,
                         it.endDate
@@ -206,9 +193,6 @@ fun RequestsScreen(
             }
             if (selectedItem.value == "Список пропусков") {
                 ListSkips()
-            }
-            if(selectedItem.value == "Создать заявку"){
-                NewRequestScreen(navController = navController)
             }
         })
 }

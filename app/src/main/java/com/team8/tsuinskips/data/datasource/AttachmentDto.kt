@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AttachmentDto(
-    @SerializedName("fileName") val fileName: String,
-    @SerializedName("file") val file: ByteArray
+    val fileName: String,
+    val file: ByteArray
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

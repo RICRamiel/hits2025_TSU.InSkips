@@ -5,10 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StudentDTO(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("surname") val surname: String,
-    @SerializedName("patronymic") val patronymic: String,
-    @SerializedName("groupName") val groupName: String,
-    @SerializedName("subgroupNames") val subgroupNames: List<String>
+    val id: String,
+    val name: String,
+    val surname: String,
+    val patronymic: String,
+    val groupName: String?,
+    val subgroupNames: List<String>
 )

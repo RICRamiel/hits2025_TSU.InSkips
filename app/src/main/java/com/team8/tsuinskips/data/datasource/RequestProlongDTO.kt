@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RequestProlongDTO(
-    @SerializedName("newEndDate") val newEndDate: String
+    val newEndDate: String
 )
