@@ -11,5 +11,5 @@ data class UserDTO(
     val surname: String,
     val patronymic: String,
     val roles: List<Roles>,
-    val groupName: String
+    val groupName: String?
 )

@@ -2,6 +2,7 @@ package com.team8.tsuinskips
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
@@ -35,10 +37,19 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -48,46 +59,39 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.team8.tsuinskips.data.datasource.Status
 import com.team8.tsuinskips.data.datasource.MissRequestType
 import com.team8.tsuinskips.viewModel.RequestsViewModel
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
 fun RequestsScreen(
-    navController: NavHostController, vm: RequestsViewModel = viewModel()
+    navController: NavHostController,
+    vm: RequestsViewModel = viewModel()
 ) {
     val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков", "Добавить пропуск")
     val selectedItem = remember { mutableStateOf(navigationDrawerItems[0]) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val profile = vm.profile.collectAsState()
     val reqList = vm.requests.collectAsState()
+    val filteredReq = vm.filteredRequests.collectAsState()
     val scope = rememberCoroutineScope()
     vm.getUserProfile()
-//    val cardList = (1..10).map {
-//        RequestCard(
-//            "болезнь",
-//            "Полушкин Василий Игоревич",
-//            "972303",
-//            "подтверждено",
-//            "28.05.2005",
-//            "29.07.2222"
-//        )
-//    }
-
 
     ModalNavigationDrawer(drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
@@ -103,7 +107,8 @@ fun RequestsScreen(
                         .fillMaxWidth(0.8f)
                         .fillMaxHeight(0.25f)
                 ) {
-                    IconButton(modifier = Modifier.padding(10.dp, 20.dp),
+                    IconButton(
+                        modifier = Modifier.padding(10.dp, 20.dp),
                         onClick = { scope.launch { drawerState.close() } },
                         content = { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Меню") })
                     Text(
@@ -130,7 +135,7 @@ fun RequestsScreen(
                             .padding(start = 16.dp)
                     )
                     Button(
-                        onClick = { vm.logout() },
+                        onClick = { TODO("ADD vm.logout(), so logoutUseCase to ViewModel") },
                         modifier = Modifier.align(Alignment.BottomEnd),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent, contentColor = Color.Transparent
@@ -183,20 +188,40 @@ fun RequestsScreen(
                         "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
                         it.creator.groupName ?: "",
                         statusToString(it.status),
-                        it.startDate,
-                        it.endDate
+                        it.startDate.toString(),
+                        it.endDate.toString()
                     )
                 }
                 LastRequests(cardList)
             }
             if (selectedItem.value == "Список пропусков") {
-                ListSkips()
+                vm.getFilteredRequestList(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                )
+                val cardList = filteredReq.value.requests.map {
+                    RequestCard(
+                        typeToString(it.missRequestType),
+                        "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
+                        it.creator.groupName ?: "",
+                        statusToString(it.status),
+                        it.startDate.toString(),
+                        it.endDate.toString()
+                    )
+                }
+                ListSkips(vm, cardList)
+            }
+            if (selectedItem.value == "Добавить пропуск") {
+                NewRequestScreen(navController = navController)
             }
         })
 }
 
 @Composable
-fun ListSkips() {
+fun ListSkips(vm: RequestsViewModel, cardList: List<RequestCard>) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(100) }
     val endMonth = remember { currentMonth.plusMonths(100) }
@@ -233,35 +258,151 @@ fun ListSkips() {
             content = { Icon(painterResource(R.drawable.filter), "Фильтр") })
     }
 
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+
     HorizontalCalendar(
 
-        modifier = Modifier.padding(top = 128.dp, start = 20.dp, end = 20.dp),
+        modifier = Modifier
+            .padding(top = 128.dp, start = 20.dp, end = 20.dp),
         state = state,
-        dayContent = { Day(it) },
+        dayContent = { day ->
+            Day(day, vm, isSelected = selectedDate == day.date) { day ->
+                selectedDate = if (selectedDate == day.date) null else day.date
+            }
+        },
         monthHeader = { month ->
+            val months = month.yearMonth
             val daysOfWeek = month.weekDays.first().map { it.date.dayOfWeek }
-            MonthHeader(daysOfWeek = daysOfWeek)
-        })
+            MonthHeader(daysOfWeek = daysOfWeek, months = months)
+        }
+    )
 }
 
 @Composable
-fun Day(day: CalendarDay) {
+fun Day(
+    day: CalendarDay,
+    vm: RequestsViewModel,
+    isSelected: Boolean,
+    onClick: (CalendarDay) -> Unit
+) {
+
+    val reqList = vm.filteredRequests.collectAsState()
+    val temp = reqList.value
+    var color = Color.Gray
+    var fontWeight = FontWeight.Normal
+    val bottomSheetState = remember { mutableStateOf(false) }
+
+    if (bottomSheetState.value) {
+        val cardList = reqList.value.requests.map {
+            RequestCard(
+                typeToString(it.missRequestType),
+                "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
+                it.creator.groupName ?: "",
+                statusToString(it.status),
+                it.startDate.toString(),
+                it.endDate.toString()
+            )
+        }
+        BottomRequest(cardList, bottomSheetState)
+    }
+
+
+    for (i in 0..<temp.requests.size) {
+        val dayStart = temp.requests[i].startDate
+        val dayEnd = temp.requests[i].endDate
+        if (day.date in dayStart..dayEnd) {
+            color = Color.Black
+            fontWeight = FontWeight.Bold
+        }
+    }
+
     Box(
-        modifier = Modifier.aspectRatio(1f), contentAlignment = Alignment.Center
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clickable(
+                enabled = day.position == DayPosition.MonthDate,
+                onClick = {
+                    onClick(day);vm.getFilteredRequestList(
+                    "zalupaKonya",
+                    null,
+                    null,
+                    day.date,
+                    day.date
+                ); bottomSheetState.value = true
+                }
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text = day.date.dayOfMonth.toString())
+        Text(
+            text = day.date.dayOfMonth.toString(),
+            fontWeight = fontWeight,
+            color = color
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomRequest(cardList: List<RequestCard>, state: MutableState<Boolean>) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(state.value) }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            containerColor = Color.White,
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+            sheetState = sheetState
+        ) {
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .border(
+                        width = 1.dp, color = Color.Gray
+                    )
+                    .paint(
+                        painterResource(R.drawable.login_background)
+                    ), contentPadding = PaddingValues(4.dp)
+            ) {
+                items(cardList) { card ->
+                    ListItem(card = card)
+                }
+            }
+            Button(onClick = {
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        showBottomSheet = false
+                    }
+                }
+            }) {
+                Text("Hide bottom sheet")
+            }
+        }
     }
 }
 
 @Composable
-fun MonthHeader(daysOfWeek: List<DayOfWeek>) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        for (dayOfWeek in daysOfWeek) {
-            Text(
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-            )
+fun MonthHeader(daysOfWeek: List<DayOfWeek>, months: YearMonth) {
+    Column {
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .padding(bottom = 12.dp),
+            text = months.month.toString(),
+            fontSize = 20.sp,
+            textAlign = TextAlign.Left
+        )
+        Row(modifier = Modifier.fillMaxWidth()) {
+            for (dayOfWeek in daysOfWeek) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                )
+            }
         }
     }
 }

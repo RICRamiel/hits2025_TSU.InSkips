@@ -11,7 +11,9 @@ import com.team8.tsuinskips.domain.RequestCreateModel
 import com.team8.tsuinskips.domain.RequestInterface
 import com.team8.tsuinskips.domain.RequestList
 import com.team8.tsuinskips.domain.RequestProlong
+import retrofit2.http.Query
 import java.io.ByteArrayOutputStream
+import java.time.LocalDate
 
 object RequestRepository : RequestInterface {
     override suspend fun prolongRequest(id: String, requestProlong: RequestProlong): String {
@@ -45,6 +47,29 @@ object RequestRepository : RequestInterface {
 
     override suspend fun getRequests(): RequestList {
         val resp = RetrofitApi.Requests.getRequests()
+        try {
+            val temp = RequestPagedListMapper.map(resp.body()!!)
+            return temp
+        } catch (ex: Exception) {
+            Log.e("GETRR", ex.toString())
+            return RequestList(emptyList())
+        }
+    }
+
+    override suspend fun getRequestsFiltered(
+        group: String?,
+        subgroups: List<String>?,
+        surname: String?,
+        startDate: LocalDate?,
+        endDate: LocalDate?
+    ): RequestList {
+        val resp = RetrofitApi.Requests.getRequestsFiltered(
+            group,
+            subgroups,
+            surname,
+            startDate,
+            endDate
+        )
         try {
             val temp = RequestPagedListMapper.map(resp.body()!!)
             return temp

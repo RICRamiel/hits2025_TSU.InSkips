@@ -3,24 +3,30 @@ package com.team8.tsuinskips.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.team8.tsuinskips.domain.RequestList
 import com.team8.tsuinskips.domain.User
 import com.team8.tsuinskips.domain.useCase.GetProfileUseCase
+import com.team8.tsuinskips.domain.useCase.GetRequestsFilteredUseCase
 import com.team8.tsuinskips.domain.useCase.GetRequestsUseCase
 import com.team8.tsuinskips.domain.useCase.LogoutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class RequestsViewModel(
     private val getProfileUseCase: GetProfileUseCase = GetProfileUseCase(),
     private val getRequestsUseCase: GetRequestsUseCase = GetRequestsUseCase(),
+    private val getRequestsFilteredUseCase: GetRequestsFilteredUseCase = GetRequestsFilteredUseCase(),
     private val logoutUseCase: LogoutUseCase = LogoutUseCase()
 ) : ViewModel() {
     private var _profile = MutableStateFlow(User("", "", "", "", "", emptyList(), ""))
     var profile = _profile.asStateFlow()
     private var _requests = MutableStateFlow(RequestList(emptyList()))
     var requests = _requests.asStateFlow()
+    private var _filteredRequests = MutableStateFlow(RequestList(emptyList()))
+    var filteredRequests = _filteredRequests.asStateFlow()
 
     fun getUserProfile() {
         viewModelScope.launch {
@@ -55,6 +61,25 @@ class RequestsViewModel(
     fun logout() {
         viewModelScope.launch {
             val resp = logoutUseCase()
+        }
+    }
+
+    fun getFilteredRequestList(
+        group: String?,
+        subgroups: List<String>?,
+        surname: String?,
+        startDate: LocalDate?,
+        endDate: LocalDate?
+    ) {
+        viewModelScope.launch {
+            val resp = getRequestsFilteredUseCase(
+                group,
+                subgroups,
+                surname,
+                startDate,
+                endDate
+            )
+            _filteredRequests.value = resp
         }
     }
 }

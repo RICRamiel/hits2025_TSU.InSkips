@@ -28,6 +28,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -66,6 +68,7 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import java.time.LocalDate
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeker.sheets.core.views.ButtonsComponent
 import com.team8.tsuinskips.data.datasource.MissRequestType
 import com.team8.tsuinskips.presentation.mappers.toRuString
 import com.team8.tsuinskips.presentation.models.AttachFileItem
@@ -105,20 +108,12 @@ fun NewRequestScreen(
             .verticalScroll(scrollState)
             .then(modifier)
     ) {
-//        IconButton(
-//            onClick = { navController.popBackStack() },
-//            modifier = Modifier
-//                .paint(
-//                    painterResource(R.drawable.arrow_back), contentScale = ContentScale.Fit
-//                )
-//                .size(33.dp)
-//        ){}
-
         OutlinedButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp),
             onClick = { showDateRangePicker = true },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF383638)),
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(
@@ -157,6 +152,7 @@ fun NewRequestScreen(
                         .weight(1f)
                         .fillMaxWidth(0.31f)
                         .fillMaxWidth(),
+
                     selected = (it == selectedMissRequestType),
                     onClick = { selectedMissRequestType = it },
                     label = {
@@ -170,7 +166,8 @@ fun NewRequestScreen(
                     colors = FilterChipDefaults.filterChipColors(
                         labelColor = Color(0xFF383638),
                         selectedContainerColor = Color(0xFF383638),
-                        selectedLabelColor = Color.White
+                        selectedLabelColor = Color.White,
+                        containerColor = Color.White
                     ),
                 )
             }
@@ -235,7 +232,8 @@ fun NewRequestScreen(
             modifier = Modifier
                 .fillMaxWidth(),
             onClick = { filePickerLauncher.launch("*/*") },
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White,Color(0xFF383638)),
         ) {
             Text(stringResource(R.string.pick_file))
         }
@@ -243,6 +241,7 @@ fun NewRequestScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         OutlinedButton(
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF383638)),
             onClick = {
                 if (selectedMissRequestType?.let {
                         requestRange?.let { it1 ->
