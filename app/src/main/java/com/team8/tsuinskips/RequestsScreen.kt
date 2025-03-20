@@ -71,7 +71,7 @@ fun RequestsScreen(
     navController: NavHostController,
     vm: RequestsViewModel = viewModel()
 ) {
-    val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков")
+    val navigationDrawerItems = listOf("Мои пропуски", "Список пропусков", "Добавить пропуск")
     val selectedItem = remember { mutableStateOf(navigationDrawerItems[0]) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val profile = vm.profile.collectAsState()
@@ -183,7 +183,7 @@ fun RequestsScreen(
                     RequestCard(
                         typeToString(it.missRequestType),
                         "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
-                        it.creator.groupName,
+                        it.creator.groupName ?: "",
                         statusToString(it.status),
                         it.startDate,
                         it.endDate
@@ -193,6 +193,9 @@ fun RequestsScreen(
             }
             if (selectedItem.value == "Список пропусков") {
                 ListSkips()
+            }
+            if (selectedItem.value == "Добавить пропуск") {
+                NewRequestScreen(navController = navController)
             }
         })
 }

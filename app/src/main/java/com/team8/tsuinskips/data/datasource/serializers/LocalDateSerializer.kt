@@ -1,6 +1,8 @@
 package com.team8.tsuinskips.data.datasource.serializers
 
+import android.util.Log
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -16,6 +18,7 @@ object LocalDateSerializer : KSerializer<LocalDate> {
         PrimitiveSerialDescriptor("LocalDate", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: LocalDate) {
+        Log.i("SERIALIZER", value.toString())
         encoder.encodeString(value.format(formatter)) // Convert LocalDate to String
     }
 

@@ -12,7 +12,7 @@ object RequestMapper {
                 startDate,
                 endDate,
                 creator,
-                missRequestType,
+                type,
                 status,
                 confirmationFiles.map { ConfirmationFileMapper.map(it) })
 

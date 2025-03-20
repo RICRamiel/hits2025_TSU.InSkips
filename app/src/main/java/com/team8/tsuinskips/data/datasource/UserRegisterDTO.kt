@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserRegisterDTO(
-    @SerializedName("name") val name: String,
-    @SerializedName("email") val email: String,
-    @SerializedName("surname") val surname: String,
-    @SerializedName("patronymic") val patronymic: String,
-    @SerializedName("password") val password: String,
+    val name: String,
+    val email: String,
+    val surname: String,
+    val patronymic: String,
+    val password: String,
 )

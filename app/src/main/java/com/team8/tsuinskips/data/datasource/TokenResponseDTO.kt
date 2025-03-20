@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TokenResponseDTO(
-    @SerializedName("token") val token: String
+    val token: String
 )

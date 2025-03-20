@@ -28,6 +28,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -98,10 +99,12 @@ fun NewRequestScreen(
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
+            .paint(painterResource(R.drawable.login_background), contentScale = ContentScale.Crop)
             .padding(16.dp)
             .verticalScroll(scrollState)
+            .then(modifier)
     ) {
         IconButton(
             onClick = { navController.popBackStack() },

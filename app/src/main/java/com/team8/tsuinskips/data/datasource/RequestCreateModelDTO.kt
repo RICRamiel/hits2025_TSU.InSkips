@@ -8,9 +8,9 @@ import java.time.LocalDate
 @Serializable
 data class RequestCreateModelDTO(
     @Serializable(with = LocalDateSerializer::class)
-    @SerializedName("startDate") val startDate: LocalDate,
+    val startDate: LocalDate,
     @Serializable(with = LocalDateSerializer::class)
-    @SerializedName("endDate") val endDate: LocalDate,
-    @SerializedName("type") val missRequestType: MissRequestType,
-    @SerializedName("confirmationFiles") val confirmationFiles: List<AttachmentDto>
+    val endDate: LocalDate,
+    val type: MissRequestType,
+    val confirmationFiles: List<AttachmentDto>
 )

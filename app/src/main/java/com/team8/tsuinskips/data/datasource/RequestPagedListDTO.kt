@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RequestPagedListDTO(
-    @SerializedName("paginationDto") val pages: PaginationDTO,
-    @SerializedName("requests") val requests: List<RequestDTO>
+    val paginationDto: PaginationDto,
+    val requests: List<RequestDTO>
 )
