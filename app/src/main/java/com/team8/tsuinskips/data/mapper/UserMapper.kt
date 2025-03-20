@@ -6,7 +6,7 @@ import com.team8.tsuinskips.domain.User
 object UserMapper {
     fun map(dto: UserDTO): User {
         return with(dto) {
-            User(id, name, email, surname, patronymic, roles)
+            User(id, name, email, surname, patronymic, roles, groupName)
         }
     }
 }
