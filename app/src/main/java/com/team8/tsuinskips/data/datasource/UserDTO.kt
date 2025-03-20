@@ -9,7 +9,7 @@ data class UserDTO(
     val name: String,
     val email: String,
     val surname: String,
-    val patronymic: String,
+    val patronymic: String?,
     val roles: List<Roles>,
     val groupName: String?
 )
