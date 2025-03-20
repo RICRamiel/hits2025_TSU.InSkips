@@ -8,6 +8,6 @@ data class UserRegisterDTO(
     val name: String,
     val email: String,
     val surname: String,
-    val patronymic: String,
+    val patronymic: String?,
     val password: String,
 )

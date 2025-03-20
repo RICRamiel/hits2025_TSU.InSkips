@@ -17,7 +17,7 @@ class RequestsViewModel(
     private val getRequestsUseCase: GetRequestsUseCase = GetRequestsUseCase(),
     private val logoutUseCase: LogoutUseCase = LogoutUseCase()
 ) : ViewModel() {
-    private var _profile = MutableStateFlow(User("", "", "", "", "", emptyList(),""))
+    private var _profile = MutableStateFlow(User("", "", "", "", "", emptyList(), ""))
     var profile = _profile.asStateFlow()
     private var _requests = MutableStateFlow(RequestList(emptyList()))
     var requests = _requests.asStateFlow()
@@ -38,7 +38,7 @@ class RequestsViewModel(
         val surname = profile.value.surname
         val patr = profile.value.patronymic
         Log.i("SNP", "$surname $name $patr")
-        return "$surname $name $patr"
+        return "$surname $name $patr".trimEnd()
     }
 
     fun getEmail(): String {

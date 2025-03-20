@@ -20,4 +20,5 @@
     <string name="subroup_name">Номер подгруппы</string>
     <string name="group_name">Номер группы</string>
     <string name="from_favorites">Из списка избранных</string>
+    <string name="error400">Что-то где-то неправильно ввели</string>
 </resources>
