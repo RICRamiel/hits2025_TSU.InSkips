@@ -1,5 +1,6 @@
 package com.team8.tsuinskips
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.team8.tsuinskips.common.application.InSkipsApplication
 import com.team8.tsuinskips.domain.UserLogin
 import com.team8.tsuinskips.domain.UserRegister
 import com.team8.tsuinskips.domain.useCase.RegisterUseCase
@@ -61,6 +64,7 @@ fun SignUpScreen(
     val birthdateStr = remember { mutableStateOf("") }
     var birthdate by remember { mutableStateOf(LocalDate.now()) }
     var showDatePicker by remember { mutableStateOf(false) }
+    val isReg = vm.isRegistered.collectAsState()
     Box(
         modifier
             .fillMaxSize()
@@ -92,8 +96,7 @@ fun SignUpScreen(
             )
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedContainerColor = Color.White, unfocusedContainerColor = Color.White
                 ),
                 value = email.value,
                 onValueChange = { newText -> email.value = newText },
@@ -107,8 +110,7 @@ fun SignUpScreen(
             )
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedContainerColor = Color.White, unfocusedContainerColor = Color.White
                 ),
                 value = SNP.value,
                 onValueChange = { newText -> SNP.value = newText },
@@ -124,16 +126,14 @@ fun SignUpScreen(
                 value = birthdateStr.value,
                 onValueChange = { newText -> birthdateStr.value },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedContainerColor = Color.White, unfocusedContainerColor = Color.White
                 ),
                 maxLines = 1,
                 trailingIcon = {
                     IconButton(
                         onClick = {
                             showDatePicker = true
-                        },
-                        modifier = Modifier
+                        }, modifier = Modifier
                             .padding(end = 12.dp)
                             .paint(
                                 painterResource(R.drawable.calendar),
@@ -151,8 +151,7 @@ fun SignUpScreen(
             )
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedContainerColor = Color.White, unfocusedContainerColor = Color.White
                 ),
                 value = passwd.value,
                 onValueChange = { newText -> passwd.value = newText },
@@ -165,29 +164,60 @@ fun SignUpScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
             SmallButton(
-                func = { vm.register(UserRegister(SNP.value.split("\\s".toRegex())[1],email.value,SNP.value.split("\\s".toRegex())[0],SNP.value.split("\\s".toRegex())[2],passwd.value))},
-                text = stringResource(R.string.register)
+                func = {
+                    if (SNP.value.isNotEmpty()) {
+                        val splitSNP = SNP.value.split("\\s".toRegex())
+                        if (splitSNP.size >= 2) {
+                            var name: String = splitSNP[1]
+                            var surname: String = splitSNP[0]
+                            var patr: String? = null
+                            if (splitSNP.size == 3) {
+                                patr = splitSNP[2]
+                            }
+                            vm.register(
+                                UserRegister(
+                                    name, email.value, surname, patr, passwd.value
+                                )
+                            )
+                        } else {
+                            Toast.makeText(
+                                InSkipsApplication.getApp().baseContext,
+                                InSkipsApplication.getApp().baseContext.getString(R.string.error400),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(
+                            InSkipsApplication.getApp().baseContext,
+                            InSkipsApplication.getApp().baseContext.getString(R.string.error400),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+
+                }, text = stringResource(R.string.register)
             )
+        }
+        if (isReg.value) {
+            navController.navigate("request")
+
         }
         if (showDatePicker) {
             val datePickerState = rememberDatePickerState(
                 initialSelectedDateMillis = birthdate.toEpochDay() * 86400000
             )
-            DatePickerDialog(
-                onDismissRequest = { showDatePicker = false },
-                confirmButton = {
-                    Button(onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            birthdate = LocalDate.ofEpochDay(millis / 86400000)
-                        }
-                        birthdateStr.value =
-                            "Дата рождения: ${birthdate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}"
-                        showDatePicker = false
-                    }) {
-                        Text("OK")
+            DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
+                Button(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        birthdate = LocalDate.ofEpochDay(millis / 86400000)
                     }
+                    birthdateStr.value =
+                        "Дата рождения: ${birthdate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}"
+                    showDatePicker = false
+                }) {
+                    Text("OK")
                 }
-            ) {
+            }) {
                 DatePicker(state = datePickerState)
             }
         }

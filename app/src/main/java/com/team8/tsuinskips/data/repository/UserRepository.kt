@@ -61,6 +61,7 @@ object UserRepository : UserInterface {
                 putString("passwd", "")
                 apply()
             }
+            InSkipsApplication.getApp().restartApp()
         } catch (ex: Exception) {
 
         }
