@@ -16,4 +16,5 @@
     <string name="selected_image">Выбранное изображение</string>
     <string name="add">Добавить</string>
     <string name="filename">Название файла</string>
+    <string name="create_request">Создать заявку</string>
 </resources>

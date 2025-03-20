@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +29,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -51,6 +53,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role.Companion.Button
@@ -101,16 +104,17 @@ fun NewRequestScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
+            .padding(top = 64.dp)
             .verticalScroll(scrollState)
     ) {
-        IconButton(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier
-                .paint(
-                    painterResource(R.drawable.arrow_back), contentScale = ContentScale.Fit
-                )
-                .size(33.dp)
-        ){}
+//        IconButton(
+//            onClick = { navController.popBackStack() },
+//            modifier = Modifier
+//                .paint(
+//                    painterResource(R.drawable.arrow_back), contentScale = ContentScale.Fit
+//                )
+//                .size(33.dp)
+//        ){}
 
         OutlinedButton(
             modifier = Modifier

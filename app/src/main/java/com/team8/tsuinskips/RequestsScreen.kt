@@ -166,6 +166,19 @@ fun RequestsScreen(
                         modifier = Modifier.fillMaxWidth(0.8f)
                     )
                 }
+                NavigationDrawerItem( label = { Text(stringResource(R.string.create_request), fontSize = 22.sp) },
+                    selected = selectedItem.value == stringResource(R.string.create_request),
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        selectedItem.value = "Создать заявку"
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = Color.Transparent,
+                        unselectedContainerColor = Color.Transparent,
+                        selectedTextColor = Color.White,
+                        unselectedTextColor = Color.LightGray
+                    ),
+                    modifier = Modifier.fillMaxWidth(0.8f))
             }
         },
         content = {
@@ -193,6 +206,9 @@ fun RequestsScreen(
             }
             if (selectedItem.value == "Список пропусков") {
                 ListSkips()
+            }
+            if(selectedItem.value == "Создать заявку"){
+                NewRequestScreen(navController = navController)
             }
         })
 }
