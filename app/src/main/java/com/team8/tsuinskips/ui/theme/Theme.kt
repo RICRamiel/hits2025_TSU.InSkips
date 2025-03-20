@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
+private val DarkColorScheme = lightColorScheme(
     primary = Color(0xFF383638),
     outline = Color(0xFF383638),
     background = Color(0xFFFFFBFE),

@@ -1,8 +1,11 @@
 package com.team8.tsuinskips.data
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.team8.tsuinskips.BuildConfig
+import com.team8.tsuinskips.R
 import com.team8.tsuinskips.common.application.InSkipsApplication
 import com.team8.tsuinskips.data.datasource.ApiRequests
 import com.team8.tsuinskips.data.datasource.ApiUser
@@ -55,6 +58,15 @@ object RetrofitApi {
                         val res = work.await()
                         token = res.body()!!.token
                     }
+                }
+            }
+            if (resp.code == 400) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    Toast.makeText(
+                        InSkipsApplication.getApp().baseContext,
+                        InSkipsApplication.getApp().baseContext.getString(R.string.error400),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             return@Interceptor resp

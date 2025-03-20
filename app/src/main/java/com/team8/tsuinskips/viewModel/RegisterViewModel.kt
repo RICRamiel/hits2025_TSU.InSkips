@@ -7,6 +7,7 @@ import com.team8.tsuinskips.domain.UserRegister
 import com.team8.tsuinskips.domain.useCase.RegisterUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel : ViewModel() {
@@ -20,6 +21,11 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
             val resp = registerUseCase(register)
             RetrofitApi.updateToken(resp)
+            if (resp.key.isNotEmpty()) {
+                _isRegistered.update { va ->
+                    !va
+                }
+            }
         }
     }
 }
