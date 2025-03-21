@@ -1,8 +1,10 @@
 package com.team8.tsuinskips
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,9 +91,15 @@ fun RequestsScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val profile = vm.profile.collectAsState()
     val reqList = vm.requests.collectAsState()
-    val filteredReq = vm.filteredRequests.collectAsState()
     val scope = rememberCoroutineScope()
     vm.getUserProfile()
+    vm.getFilteredRequestList(
+        "zalupaKonya",
+        null,
+        null,
+        null,
+        null
+    )
 
     ModalNavigationDrawer(drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
@@ -112,7 +120,7 @@ fun RequestsScreen(
                         onClick = { scope.launch { drawerState.close() } },
                         content = { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Меню") })
                     Text(
-                        text = "${profile.value.surname} ${profile.value.name} ${profile.value.patronymic} ",
+                        text = vm.getSNP(),
                         fontFamily = FontFamily(Font(R.font.istokweb_regular)),
                         color = Color.White,
                         textAlign = TextAlign.Left,
@@ -195,14 +203,96 @@ fun RequestsScreen(
                 LastRequests(cardList)
             }
             if (selectedItem.value == "Список пропусков") {
-                vm.getFilteredRequestList(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                )
-                val cardList = filteredReq.value.requests.map {
+                ListSkips(vm)
+            }
+            if (selectedItem.value == "Добавить пропуск") {
+                NewRequestScreen(navController = navController)
+            }
+        })
+}
+
+@Composable
+fun ListSkips(vm: RequestsViewModel) {
+    val currentMonth = remember { YearMonth.now() }
+    val startMonth = remember { currentMonth.minusMonths(1) }
+    val endMonth = remember { currentMonth.plusMonths(1) }
+    val daysOfWeek = remember { daysOfWeek() }
+
+    val state = rememberCalendarState(
+        startMonth = startMonth,
+        endMonth = endMonth,
+        firstVisibleMonth = currentMonth,
+        firstDayOfWeek = daysOfWeek.first(),
+    )
+    LazyColumn{
+        item {
+            Box {
+                Box(
+                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter
+                ) {
+                    Text(
+                        text = stringResource(R.string.skips_list),
+                        modifier = Modifier
+                            .padding(top = 56.dp)
+                            .padding(end = 20.dp)
+                            .background((colorResource(R.color.white))),
+                        color = Color.Black,
+                        fontSize = 20.sp
+                    )
+                }
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
+                ) {
+                    IconButton(onClick = { "TODO" },
+                        modifier = Modifier
+                            .padding(28.dp, 56.dp)
+                            .size(24.dp),
+                        content = { Icon(painterResource(R.drawable.filter), "Фильтр") })
+                }
+            }
+        }
+        item{
+            val bottomSheetState = remember { mutableStateOf(false) }
+            var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+            val reqList = vm.filteredRequests.collectAsState()
+            val temp = reqList.value
+            HorizontalCalendar(
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp),
+                state = state,
+                dayContent = { day ->
+                    var color = Color.Gray
+                    var fontWeight = FontWeight.Normal
+
+                    for (i in 0..<temp.requests.size) {
+                        val dayStart = temp.requests[i].startDate
+                        val dayEnd = temp.requests[i].endDate
+                        if (day.date in dayStart..dayEnd) {
+                            color = Color.Black
+                            fontWeight = FontWeight.Bold
+                        }
+                    }
+                    Day(
+                        day,
+                        color,
+                        fontWeight,
+                        bottomSheetState,
+                        selectedDate,
+                        vm,
+                        isSelected = selectedDate == day.date
+                    ) { day ->
+                        selectedDate = if (selectedDate == day.date) null else day.date
+                    }
+                },
+                monthHeader = { month ->
+                    val months = month.yearMonth
+                    val daysOfWeek = month.weekDays.first().map { it.date.dayOfWeek }
+                    MonthHeader(daysOfWeek = daysOfWeek, months = months)
+                }
+            )
+            if (bottomSheetState.value) {
+                val cardList = reqList.value.requests.map {
                     RequestCard(
                         typeToString(it.missRequestType),
                         "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
@@ -212,123 +302,40 @@ fun RequestsScreen(
                         it.endDate.toString()
                     )
                 }
-                ListSkips(vm, cardList)
+                BottomRequest(cardList)
             }
-            if (selectedItem.value == "Добавить пропуск") {
-                NewRequestScreen(navController = navController)
-            }
-        })
-}
-
-@Composable
-fun ListSkips(vm: RequestsViewModel, cardList: List<RequestCard>) {
-    val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth.minusMonths(100) }
-    val endMonth = remember { currentMonth.plusMonths(100) }
-    val daysOfWeek = remember { daysOfWeek() }
-
-    val state = rememberCalendarState(
-        startMonth = startMonth,
-        endMonth = endMonth,
-        firstVisibleMonth = currentMonth,
-        firstDayOfWeek = daysOfWeek.first(),
-    )
-
-    Box(
-        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter
-    ) {
-        Text(
-            text = stringResource(R.string.skips_list),
-            modifier = Modifier
-                .padding(top = 56.dp)
-                .padding(end = 20.dp)
-                .background((colorResource(R.color.white))),
-            color = Color.Black,
-            fontSize = 20.sp
-        )
-    }
-
-    Box(
-        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
-    ) {
-        IconButton(onClick = { "TODO" },
-            modifier = Modifier
-                .padding(28.dp, 56.dp)
-                .size(24.dp),
-            content = { Icon(painterResource(R.drawable.filter), "Фильтр") })
-    }
-
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
-
-    HorizontalCalendar(
-
-        modifier = Modifier
-            .padding(top = 128.dp, start = 20.dp, end = 20.dp),
-        state = state,
-        dayContent = { day ->
-            Day(day, vm, isSelected = selectedDate == day.date) { day ->
-                selectedDate = if (selectedDate == day.date) null else day.date
-            }
-        },
-        monthHeader = { month ->
-            val months = month.yearMonth
-            val daysOfWeek = month.weekDays.first().map { it.date.dayOfWeek }
-            MonthHeader(daysOfWeek = daysOfWeek, months = months)
         }
-    )
+    }
 }
 
 @Composable
 fun Day(
     day: CalendarDay,
+    color: Color,
+    fontWeight: FontWeight,
+    bottomSheetState: MutableState<Boolean>,
+    selectedDate: LocalDate?,
     vm: RequestsViewModel,
     isSelected: Boolean,
     onClick: (CalendarDay) -> Unit
 ) {
 
-    val reqList = vm.filteredRequests.collectAsState()
-    val temp = reqList.value
-    var color = Color.Gray
-    var fontWeight = FontWeight.Normal
-    val bottomSheetState = remember { mutableStateOf(false) }
-
-    if (bottomSheetState.value) {
-        val cardList = reqList.value.requests.map {
-            RequestCard(
-                typeToString(it.missRequestType),
-                "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
-                it.creator.groupName ?: "",
-                statusToString(it.status),
-                it.startDate.toString(),
-                it.endDate.toString()
-            )
-        }
-        BottomRequest(cardList, bottomSheetState)
+    if (isSelected) {
+        vm.getFilteredRequestList(
+            "zalupaKonya",
+            null,
+            null,
+            selectedDate,
+            selectedDate
+        )
     }
-
-
-    for (i in 0..<temp.requests.size) {
-        val dayStart = temp.requests[i].startDate
-        val dayEnd = temp.requests[i].endDate
-        if (day.date in dayStart..dayEnd) {
-            color = Color.Black
-            fontWeight = FontWeight.Bold
-        }
-    }
-
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .clickable(
                 enabled = day.position == DayPosition.MonthDate,
                 onClick = {
-                    onClick(day);vm.getFilteredRequestList(
-                    "zalupaKonya",
-                    null,
-                    null,
-                    day.date,
-                    day.date
-                ); bottomSheetState.value = true
+                    onClick(day); bottomSheetState.value = true;
                 }
             ),
         contentAlignment = Alignment.Center
@@ -341,45 +348,20 @@ fun Day(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomRequest(cardList: List<RequestCard>, state: MutableState<Boolean>) {
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(state.value) }
-
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            containerColor = Color.White,
-            onDismissRequest = {
-                showBottomSheet = false
-            },
-            sheetState = sheetState
-        ) {
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .border(
-                        width = 1.dp, color = Color.Gray
-                    )
-                    .paint(
-                        painterResource(R.drawable.login_background)
-                    ), contentPadding = PaddingValues(4.dp)
-            ) {
-                items(cardList) { card ->
-                    ListItem(card = card)
-                }
-            }
-            Button(onClick = {
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        showBottomSheet = false
-                    }
-                }
-            }) {
-                Text("Hide bottom sheet")
-            }
+fun BottomRequest(cardList: List<RequestCard>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp, color = Color.Gray
+            )
+            .paint(
+                painterResource(R.drawable.login_background)
+            ),
+    ) {
+        cardList.forEach { card ->
+            ListItem(card = card)
         }
     }
 }
