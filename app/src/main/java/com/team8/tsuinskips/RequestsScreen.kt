@@ -135,7 +135,7 @@ fun RequestsScreen(
                             .padding(start = 16.dp)
                     )
                     Button(
-                        onClick = { TODO("ADD vm.logout(), so logoutUseCase to ViewModel") },
+                        onClick = { vm.logout() },
                         modifier = Modifier.align(Alignment.BottomEnd),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent, contentColor = Color.Transparent
