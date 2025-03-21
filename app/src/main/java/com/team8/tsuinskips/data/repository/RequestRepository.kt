@@ -5,6 +5,7 @@ import android.util.Log
 import com.team8.tsuinskips.data.RetrofitApi
 import com.team8.tsuinskips.data.datasource.AttachmentDto
 import com.team8.tsuinskips.data.datasource.RequestCreateModelDTO
+import com.team8.tsuinskips.data.datasource.RequestProlongDTO
 import com.team8.tsuinskips.data.mapper.RequestPagedListMapper
 import com.team8.tsuinskips.data.mapper.RequestProlongMapper
 import com.team8.tsuinskips.domain.RequestCreateModel

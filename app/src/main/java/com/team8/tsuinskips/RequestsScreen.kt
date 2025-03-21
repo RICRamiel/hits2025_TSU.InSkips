@@ -1,7 +1,7 @@
 package com.team8.tsuinskips
 
-import android.util.Log
 import android.util.Range
+import android.widget.NumberPicker.OnValueChangeListener
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
@@ -25,11 +25,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,6 +45,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -69,15 +75,22 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.team8.tsuinskips.data.datasource.Status
 import com.team8.tsuinskips.data.datasource.MissRequestType
 import com.team8.tsuinskips.ui_elements.FilterBottomSheet
 import com.team8.tsuinskips.viewModel.RequestsViewModel
+import kotlinx.coroutines.coroutineScope
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import java.util.UUID
 
 @Composable
 fun RequestsScreen(
@@ -183,6 +196,7 @@ fun RequestsScreen(
 
                 val cardList = reqList.value.requests.map {
                     RequestCard(
+                        it.id,
                         typeToString(it.missRequestType),
                         "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
                         it.creator.groupName ?: "",
@@ -191,7 +205,7 @@ fun RequestsScreen(
                         it.endDate.toString()
                     )
                 }
-                LastRequests(cardList)
+                LastRequests(cardList, vm)
             }
             if (selectedItem.value == "Список пропусков") {
                 ListSkips(vm)
@@ -295,6 +309,7 @@ fun ListSkips(vm: RequestsViewModel) {
             if (bottomSheetState.value) {
                 val cardList = reqList.value.requests.map {
                     RequestCard(
+                        it.id,
                         typeToString(it.missRequestType),
                         "${it.creator.surname} ${it.creator.name} ${it.creator.patronymic}",
                         it.creator.groupName ?: "",
@@ -303,7 +318,7 @@ fun ListSkips(vm: RequestsViewModel) {
                         it.endDate.toString()
                     )
                 }
-                BottomRequest(cardList)
+                BottomRequest(cardList, vm)
             }
         }
     }
@@ -330,9 +345,9 @@ fun ModalBottomSheet(
             modifier = Modifier.padding(horizontal = 16.dp),
             onAnyChange = { surname: String?, group: String?, subgroup: String?, range: Range<LocalDate>? ->
                 vm.getFilteredRequestList(
-                    if(group.isNullOrEmpty()) null else group,
-                    if(subgroup.isNullOrEmpty()) null else listOf(subgroup),
-                    if(surname.isNullOrEmpty()) null else surname,
+                    if (group.isNullOrEmpty()) null else group,
+                    if (subgroup.isNullOrEmpty()) null else listOf(subgroup),
+                    if (surname.isNullOrEmpty()) null else surname,
                     range?.lower,
                     range?.upper
                 );groupNameRemember.value = group;surnameRemember.value =
@@ -386,7 +401,7 @@ fun Day(
 }
 
 @Composable
-fun BottomRequest(cardList: List<RequestCard>) {
+fun BottomRequest(cardList: List<RequestCard>, vm: RequestsViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -398,7 +413,7 @@ fun BottomRequest(cardList: List<RequestCard>) {
             ),
     ) {
         cardList.forEach { card ->
-            ListItem(card = card)
+            ListItem(card = card, vm)
         }
     }
 }
@@ -427,7 +442,7 @@ fun MonthHeader(daysOfWeek: List<DayOfWeek>, months: YearMonth) {
 }
 
 @Composable
-fun LastRequests(cardList: List<RequestCard>) {
+fun LastRequests(cardList: List<RequestCard>, vm: RequestsViewModel) {
     Box(
         modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
     ) {
@@ -453,14 +468,20 @@ fun LastRequests(cardList: List<RequestCard>) {
             ), contentPadding = PaddingValues(4.dp)
     ) {
         items(cardList) { card ->
-            ListItem(card = card)
+            ListItem(card = card, vm)
         }
     }
 }
 
 
 @Composable
-fun ListItem(card: RequestCard) {
+fun ListItem(card: RequestCard, vm: RequestsViewModel) {
+
+    val id = remember { mutableStateOf("") }
+    val sheetState = remember { mutableStateOf(false) }
+    if (id.value != "") {
+        ProlongBottomSheet(sheetState, vm, card.dateEnd, id)
+    }
 
     val borderColor = when (card.reason) {
         "болезнь" -> colorResource(R.color.greenIll)
@@ -468,7 +489,6 @@ fun ListItem(card: RequestCard) {
         "командировка" -> colorResource(R.color.blueTrip)
         else -> Color.Gray
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -480,6 +500,7 @@ fun ListItem(card: RequestCard) {
             modifier = Modifier
                 .background(colorResource(R.color.white))
                 .fillMaxWidth()
+                .clickable { id.value = card.id;sheetState.value = true }
                 .border(
                     width = 2.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
                 )
@@ -595,6 +616,38 @@ fun ListItem(card: RequestCard) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProlongBottomSheet(
+    sheetState: MutableState<Boolean>,
+    vm: RequestsViewModel,
+    newDate: String,
+    id: MutableState<String>
+) {
+    var date by remember { mutableStateOf(LocalDate.now()) }
+    val newDate = remember { mutableStateOf(newDate) }
+
+    if (sheetState.value) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = date.toEpochDay() * 86400000
+        )
+        newDate.value = date.toString()
+        DatePickerDialog(onDismissRequest = { sheetState.value = false }, confirmButton = {
+            Button(onClick = {
+                datePickerState.selectedDateMillis?.let { millis ->
+                    newDate.value = LocalDate.ofEpochDay(millis / 86400000).toString()
+                }
+                sheetState.value = false
+                vm.prolong(id.value,newDate.value)
+            }) {
+                Text("OK")
+            }
+        }) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
 fun typeToString(reason: MissRequestType): String {
     if (reason == MissRequestType.FAMILY) {
         return "семья"
@@ -616,6 +669,7 @@ fun statusToString(reason: Status): String {
 }
 
 data class RequestCard(
+    val id: String,
     val reason: String,
     val SNP: String,
     val groupName: String,

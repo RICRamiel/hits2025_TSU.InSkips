@@ -1,5 +1,6 @@
 package com.team8.tsuinskips.domain
 
+import com.team8.tsuinskips.data.datasource.RequestProlongDTO
 import java.time.LocalDate
 
 interface RequestInterface {
