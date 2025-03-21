@@ -24,8 +24,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.team8.tsuinskips.common.application.InSkipsApplication
 import com.team8.tsuinskips.viewModel.StartViewModel
 
 @Composable
@@ -57,7 +59,15 @@ fun StartScreen(
                 modifier = Modifier.padding(start = 67.dp, end = 66.dp, bottom = 160.dp)
             )
             ParametrButton(
-                func = { navController.navigate("login") },
+                func = {
+                    navController.navigate("login")
+                    InSkipsApplication.getApp().appSharedPref.edit {
+                        putString("token", "")
+                        putString("email", "")
+                        putString("passwd", "")
+                        apply()
+                    }
+                },
                 text = stringResource(R.string.login),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -71,7 +81,15 @@ fun StartScreen(
                     .height(30.dp)
             )
             ParametrButton(
-                func = { navController.navigate("register") },
+                func = {
+                    navController.navigate("register")
+                    InSkipsApplication.getApp().appSharedPref.edit {
+                        putString("token", "")
+                        putString("email", "")
+                        putString("passwd", "")
+                        apply()
+                    }
+                },
                 text = stringResource(R.string.enregister),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

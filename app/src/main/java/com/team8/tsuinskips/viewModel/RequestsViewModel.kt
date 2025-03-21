@@ -42,7 +42,11 @@ class RequestsViewModel(
     fun getSNP(): String {
         val name = profile.value.name
         val surname = profile.value.surname
-        val patr = profile.value.patronymic
+        val patr = if (profile.value.patronymic != null) {
+            profile.value.patronymic
+        } else {
+            ""
+        }
         Log.i("SNP", "$surname $name $patr")
         return "$surname $name $patr".trimEnd()
     }
@@ -73,11 +77,7 @@ class RequestsViewModel(
     ) {
         viewModelScope.launch {
             val resp = getRequestsFilteredUseCase(
-                group,
-                subgroups,
-                surname,
-                startDate,
-                endDate
+                group, subgroups, surname, startDate, endDate
             )
             _filteredRequests.value = resp
         }
