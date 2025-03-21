@@ -28,6 +28,8 @@ import androidx.core.content.edit
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.team8.tsuinskips.common.application.InSkipsApplication
+import com.team8.tsuinskips.data.RetrofitApi
+import com.team8.tsuinskips.domain.Token
 import com.team8.tsuinskips.viewModel.StartViewModel
 
 @Composable
@@ -67,6 +69,7 @@ fun StartScreen(
                         putString("passwd", "")
                         apply()
                     }
+                    RetrofitApi.updateToken(Token(""))
                 },
                 text = stringResource(R.string.login),
                 modifier = Modifier
@@ -89,6 +92,7 @@ fun StartScreen(
                         putString("passwd", "")
                         apply()
                     }
+                    RetrofitApi.updateToken(Token(""))
                 },
                 text = stringResource(R.string.enregister),
                 modifier = Modifier
