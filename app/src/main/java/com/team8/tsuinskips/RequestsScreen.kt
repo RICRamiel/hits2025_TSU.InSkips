@@ -1,10 +1,12 @@
 package com.team8.tsuinskips
 
 import android.util.Log
+import android.util.Range
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,13 +41,9 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,8 +71,8 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.team8.tsuinskips.data.datasource.Status
 import com.team8.tsuinskips.data.datasource.MissRequestType
+import com.team8.tsuinskips.ui_elements.FilterBottomSheet
 import com.team8.tsuinskips.viewModel.RequestsViewModel
-import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -93,13 +91,6 @@ fun RequestsScreen(
     val reqList = vm.requests.collectAsState()
     val scope = rememberCoroutineScope()
     vm.getUserProfile()
-    vm.getFilteredRequestList(
-        "zalupaKonya",
-        null,
-        null,
-        null,
-        null
-    )
 
     ModalNavigationDrawer(drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
@@ -217,14 +208,20 @@ fun ListSkips(vm: RequestsViewModel) {
     val startMonth = remember { currentMonth.minusMonths(1) }
     val endMonth = remember { currentMonth.plusMonths(1) }
     val daysOfWeek = remember { daysOfWeek() }
-
+    val sheetState = remember { mutableStateOf(false) }
+    val rememberGroup = remember { mutableStateOf<String?>(null) }
+    val rememberSubGroup = remember { mutableStateOf<List<String>?>(null) }
+    val rememberSurname = remember { mutableStateOf<String?>(null) }
+    if (sheetState.value) {
+        ModalBottomSheet(sheetState, vm, rememberGroup, rememberSurname, rememberSubGroup.value)
+    }
     val state = rememberCalendarState(
         startMonth = startMonth,
         endMonth = endMonth,
         firstVisibleMonth = currentMonth,
         firstDayOfWeek = daysOfWeek.first(),
     )
-    LazyColumn{
+    LazyColumn(modifier = Modifier.padding(top = 70.dp)) {
         item {
             Box {
                 Box(
@@ -233,7 +230,6 @@ fun ListSkips(vm: RequestsViewModel) {
                     Text(
                         text = stringResource(R.string.skips_list),
                         modifier = Modifier
-                            .padding(top = 56.dp)
                             .padding(end = 20.dp)
                             .background((colorResource(R.color.white))),
                         color = Color.Black,
@@ -244,15 +240,17 @@ fun ListSkips(vm: RequestsViewModel) {
                 Box(
                     modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd
                 ) {
-                    IconButton(onClick = { "TODO" },
+                    IconButton(onClick = { sheetState.value = true },
                         modifier = Modifier
-                            .padding(28.dp, 56.dp)
+                            .padding(horizontal = 28.dp)
+                            .padding(bottom = 56.dp)
                             .size(24.dp),
                         content = { Icon(painterResource(R.drawable.filter), "Фильтр") })
                 }
             }
         }
-        item{
+        item {
+
             val bottomSheetState = remember { mutableStateOf(false) }
             var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
             val reqList = vm.filteredRequests.collectAsState()
@@ -276,6 +274,9 @@ fun ListSkips(vm: RequestsViewModel) {
                     Day(
                         day,
                         color,
+                        rememberGroup,
+                        rememberSurname,
+                        rememberSubGroup.value,
                         fontWeight,
                         bottomSheetState,
                         selectedDate,
@@ -308,10 +309,46 @@ fun ListSkips(vm: RequestsViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ModalBottomSheet(
+    sheetState: MutableState<Boolean>,
+    vm: RequestsViewModel,
+    groupNameRemember: MutableState<String?>,
+    surnameRemember: MutableState<String?>,
+    subgroupNameRemember: List<String>?
+) {
+    val state = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            sheetState.value = false
+        },
+        sheetState = state
+    ) {
+        FilterBottomSheet(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            onAnyChange = { surname: String?, group: String?, subgroup: String?, range: Range<LocalDate>? ->
+                vm.getFilteredRequestList(
+                    if(group.isNullOrEmpty()) null else group,
+                    if(subgroup.isNullOrEmpty()) null else listOf(subgroup),
+                    if(surname.isNullOrEmpty()) null else surname,
+                    range?.lower,
+                    range?.upper
+                );groupNameRemember.value = group;surnameRemember.value =
+                surname;subgroupNameRemember?.plus(subgroup)
+            }
+        )
+    }
+}
+
 @Composable
 fun Day(
     day: CalendarDay,
     color: Color,
+    groupNameRemember: MutableState<String?>,
+    surnameRemember: MutableState<String?>,
+    subgroupNameRemember: List<String>?,
     fontWeight: FontWeight,
     bottomSheetState: MutableState<Boolean>,
     selectedDate: LocalDate?,
@@ -322,9 +359,9 @@ fun Day(
 
     if (isSelected) {
         vm.getFilteredRequestList(
-            "zalupaKonya",
-            null,
-            null,
+            groupNameRemember.value,
+            subgroupNameRemember,
+            surnameRemember.value,
             selectedDate,
             selectedDate
         )

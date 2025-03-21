@@ -42,18 +42,23 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 fun FilterBottomSheet(
     modifier: Modifier = Modifier,
-    onAnyChange: (surname: String, group: String, subgroup: String, range: Range<LocalDate>?, isFavorite: Boolean) -> Unit
+    onAnyChange: (surname: String?, group: String?, subgroup: String?, range: Range<LocalDate>?) -> Unit
 ) {
     var searchRange: Range<LocalDate>? by remember { mutableStateOf(null) }
     var searchSurname: String by remember { mutableStateOf("") }
     var searchGroupName: String by remember { mutableStateOf("") }
     var searchSubgroupName: String by remember { mutableStateOf("") }
-    var isSearchFavorite: Boolean by remember { mutableStateOf(false) }
-
     var showDateRangePicker by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
-    fun onAnyChange() { onAnyChange(searchSurname, searchGroupName, searchSubgroupName, searchRange, isSearchFavorite) }
+    fun onAnyChange() {
+        onAnyChange(
+            if (searchSurname == "") null else searchSurname,
+            if (searchGroupName == "") null else searchGroupName,
+            if (searchSubgroupName == "") null else searchSubgroupName,
+            searchRange
+        )
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -126,17 +131,6 @@ fun FilterBottomSheet(
                 fontSize = 16.sp
             )
         }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Checkbox(
-                checked = isSearchFavorite,
-                onCheckedChange = { isSearchFavorite = !isSearchFavorite; onAnyChange() },
-            )
-            Text(text = stringResource(R.string.from_favorites))
-        }
-
         if (showDateRangePicker) {
             CalendarDialog(
                 state = rememberSheetState(
