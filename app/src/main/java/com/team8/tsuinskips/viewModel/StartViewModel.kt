@@ -11,12 +11,14 @@ import com.team8.tsuinskips.domain.useCase.LogoutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
 class StartViewModel(
     private val getProfileUseCase: GetProfileUseCase = GetProfileUseCase(),
 ) : ViewModel() {
     private val _isLogged = MutableStateFlow(false)
     val isLogged = _isLogged.asStateFlow()
+
     fun checkMemory() {
         viewModelScope.launch {
             val token = InSkipsApplication.getApp().appSharedPref.getString("token", "")
@@ -26,9 +28,9 @@ class StartViewModel(
                     if (getProfileUseCase().id != "") {
                         _isLogged.value = true
                     } else {
-
+                        Log.i("logInVALUS","HAHAH")
                     }
-                }.join()
+                }
             }
         }
     }

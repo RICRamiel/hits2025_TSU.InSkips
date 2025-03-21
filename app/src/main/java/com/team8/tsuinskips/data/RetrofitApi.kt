@@ -34,7 +34,7 @@ import com.team8.tsuinskips.data.mapper.TokenMapper
 object RetrofitApi {
     private val BASE_URL
         get() = BuildConfig.RETROFIT_BASE_URL
-    private var token = " "
+    private var token = ""
     private val client = OkHttpClient()
     private val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 

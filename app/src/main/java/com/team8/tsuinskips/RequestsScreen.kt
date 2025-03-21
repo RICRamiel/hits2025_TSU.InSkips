@@ -120,7 +120,7 @@ fun RequestsScreen(
                         onClick = { scope.launch { drawerState.close() } },
                         content = { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Меню") })
                     Text(
-                        text = "${profile.value.surname} ${profile.value.name} ${profile.value.patronymic} ",
+                        text = vm.getSNP(),
                         fontFamily = FontFamily(Font(R.font.istokweb_regular)),
                         color = Color.White,
                         textAlign = TextAlign.Left,
@@ -143,7 +143,7 @@ fun RequestsScreen(
                             .padding(start = 16.dp)
                     )
                     Button(
-                        onClick = { TODO("ADD vm.logout(), so logoutUseCase to ViewModel") },
+                        onClick = { vm.logout() },
                         modifier = Modifier.align(Alignment.BottomEnd),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent, contentColor = Color.Transparent
